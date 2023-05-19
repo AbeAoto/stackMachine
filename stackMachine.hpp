@@ -6,28 +6,28 @@
 class StackMachine
 {
 public:
-  // コンストラクタ
-  StackMachine() {};
+    // コンストラクタ
+    StackMachine(){};
 
-  // デストラクタ
-  ~StackMachine() {};
+    // デストラクタ
+    ~StackMachine(){};
 
-  void parseFile(std::string fileName);
+    void parseFile(std::string fileName);
 
-  void push(int num);
+    void push(int num);
 
-  void add();
+    void add();
 
-  void sub();
+    void sub();
 
-  void mul();
+    void mul();
 
-  void div();
+    void div();
 
-  void print();
+    void print();
 
-  void pop();
+    void pop();
 
 private:
-  std::stack<int> _stack;
+    std::stack<int> _stack;
 };

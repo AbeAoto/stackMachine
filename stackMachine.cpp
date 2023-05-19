@@ -7,38 +7,48 @@ void StackMachine::parseFile(std::string fileName)
   std::ifstream inputFile(fileName);
 
   // オープンエラー処理
-  if (!inputFile.is_open()) {
+  if (!inputFile.is_open())
+  {
     std::cerr << "Could not open the file : " << fileName << std::endl;
     exit(1);
   }
 
   // 命令分岐(多分あんまりよくない実装)
   std::string word;
-  while (inputFile >> word) {
+  while (inputFile >> word)
+  {
 
-    if (word == "PUSH") {
+    if (word == "PUSH")
+    {
       inputFile >> word;
       push(std::stoi(word));
     }
-    else if (word == "POP") {
+    else if (word == "POP")
+    {
       pop();
     }
-    else if (word == "ADD") {
+    else if (word == "ADD")
+    {
       add();
     }
-    else if (word == "SUB") {
+    else if (word == "SUB")
+    {
       sub();
     }
-    else if (word == "MUL") {
+    else if (word == "MUL")
+    {
       mul();
     }
-    else if (word == "DIV") {
+    else if (word == "DIV")
+    {
       div();
     }
-    else if (word == "PRINT") {
+    else if (word == "PRINT")
+    {
       print();
     }
-    else {
+    else
+    {
       std::cerr << "This operation is not supported!" << std::endl;
     }
   }
@@ -53,8 +63,9 @@ void StackMachine::push(int num)
 
 void StackMachine::add()
 {
-  //もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2) {
+  // もうちょっとちゃんとした例外投げた方がいい
+  if (_stack.size() < 2)
+  {
     exit(1);
   }
 
@@ -67,8 +78,9 @@ void StackMachine::add()
 
 void StackMachine::sub()
 {
-  //もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2) {
+  // もうちょっとちゃんとした例外投げた方がいい
+  if (_stack.size() < 2)
+  {
     exit(1);
   }
 
@@ -81,8 +93,9 @@ void StackMachine::sub()
 
 void StackMachine::mul()
 {
-  //もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2) {
+  // もうちょっとちゃんとした例外投げた方がいい
+  if (_stack.size() < 2)
+  {
     exit(1);
   }
 
@@ -95,8 +108,9 @@ void StackMachine::mul()
 
 void StackMachine::div()
 {
-  //もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2) {
+  // もうちょっとちゃんとした例外投げた方がいい
+  if (_stack.size() < 2)
+  {
     exit(1);
   }
 
@@ -106,7 +120,8 @@ void StackMachine::div()
   int op1 = _stack.top();
   _stack.pop();
 
-  if (op2 == 0) {
+  if (op2 == 0)
+  {
     std::cerr << "[err] divided 0 : " << op1 << "/" << op2 << std::endl;
     exit(1);
   }
