@@ -1,36 +1,6 @@
+#include "stackMachine.hpp"
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <stack>
-
-class StackMachine
-{
-public:
-  // コンストラクタ
-  StackMachine() {};
-
-  // デストラクタ
-  ~StackMachine() {};
-
-  void parseFile(std::string fileName);
-
-  void push(int num);
-
-  void add();
-
-  void sub();
-
-  void mul();
-
-  void div();
-
-  void print();
-
-  void pop();
-  
-private:
-  std::stack<int> _stack;
-};
 
 void StackMachine::parseFile(std::string fileName)
 {
@@ -45,7 +15,7 @@ void StackMachine::parseFile(std::string fileName)
   // 命令分岐(多分あんまりよくない実装)
   std::string word;
   while (inputFile >> word) {
-    
+
     if (word == "PUSH") {
       inputFile >> word;
       push(std::stoi(word));
@@ -152,12 +122,4 @@ void StackMachine::print()
 void StackMachine::pop()
 {
   _stack.pop();
-}
-
-int main(void)
-{
-  StackMachine sm;
-  sm.parseFile("./TestOperation.txt");
-
-  return 0;
 }
