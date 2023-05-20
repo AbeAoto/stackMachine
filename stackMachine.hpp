@@ -7,32 +7,15 @@
 class StackMachine
 {
 public:
-    // コンストラクタ
+    // コンストラクタ・デストラクタ
     StackMachine() : _programCounter(0) {};
-
-    // デストラクタ
     ~StackMachine(){};
 
+    /// @brief ファイルから命令を読み込み、正常判定を行う。
+    /// @param fileName  読み込みファイル名
     void ParseFile(std::string fileName);
 
-    void Push(int num);
-
-    void Pop();
-
-    void Add();
-
-    void Sub();
-
-    void Mul();
-
-    void Div();
-
-    void Print();
-
-    void Jump(unsigned short label);
-
-    void Jpeq0(unsigned short label);
-
+    /// @brief 読み込んだ命令を実行する
     void DoInstructions();
 
 private:
@@ -49,19 +32,35 @@ private:
         JPEQ0,
     };
 
+    // 命令関連
+    void Push(int num);
+    void Pop();
+    void Add();
+    void Sub();
+    void Mul();
+    void Div();
+    void Print();
+    void Jump(unsigned short label);
+    void Jpeq0(unsigned short label);
+
+    // 命令→オペコード・オペランド変換
     const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;
     const short GetOperandFromInstruction(const unsigned int instruction) const;
 
+    // ラベル判定
     const bool IsLabelsContain(const unsigned short label) const;
     const unsigned short GetLabeledAddress(const unsigned short label) const;
 
+    // ジャンプ判定
     void JampAddressValidCheck() const;
 
+    // アーキテクチャ関連
     std::vector<unsigned int> _instructions;     /// 命令列
     std::vector<unsigned int> _labels;         /// ラベルとそのアドレスが入っている
     std::stack<int> _stack;                      /// スタック
-
     unsigned int _programCounter;
+
+    // 定数関連
     const unsigned short _opecodeBytes = 16;
     const unsigned short _operandBytes = 16;
 
