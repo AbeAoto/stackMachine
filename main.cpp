@@ -3,7 +3,8 @@
 int main(void)
 {
     StackMachine sm;
-    sm.parseFile("./TestOperation.txt");
+    sm.ParseFile("./TestOperation.txt");
+    sm.DoInstructions();
 
     return 0;
 }

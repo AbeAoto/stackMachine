@@ -3,7 +3,7 @@
 #include <fstream>
 #include <bitset>
 
-void StackMachine::parseFile(std::string fileName)
+void StackMachine::ParseFile(std::string fileName)
 {
   std::ifstream inputFile(fileName);
 
@@ -26,37 +26,30 @@ void StackMachine::parseFile(std::string fileName)
       inputFile >> word;
       opecode = static_cast<unsigned short>(OPECODES::PUSH);
       operand = static_cast<short>(std::stoi(word));
-      push(std::stoi(word));
     }
     else if (word == "POP")
     {
       opecode = static_cast<int>(OPECODES::POP);
-      pop();
     }
     else if (word == "ADD")
     {
       opecode = static_cast<int>(OPECODES::ADD);
-      add();
     }
     else if (word == "SUB")
     {
       opecode = static_cast<int>(OPECODES::SUB);
-      sub();
     }
     else if (word == "MUL")
     {
       opecode = static_cast<int>(OPECODES::MUL);
-      mul();
     }
     else if (word == "DIV")
     {
       opecode = static_cast<int>(OPECODES::DIV);
-      div();
     }
     else if (word == "PRINT")
     {
       opecode = static_cast<int>(OPECODES::PRINT);
-      print();
     }
     else
     {
@@ -72,12 +65,36 @@ void StackMachine::parseFile(std::string fileName)
   inputFile.close();
 }
 
-void StackMachine::push(int num)
+void StackMachine::DoInstructions()
+{
+  programCounter = 0;
+  const unsigned int instructionNum = _instructions.size();
+
+  while(programCounter < instructionNum) {
+
+    const unsigned int instruction = _instructions[programCounter];
+    const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(instruction));
+    const short operand = GetOperandFromInstruction(instruction);
+
+    switch(opecode) {
+      case OPECODES::PUSH:  Push(operand);   break;
+      case OPECODES::POP:   Pop();           break;
+      case OPECODES::ADD:   Add();           break;
+      case OPECODES::SUB:   Sub();           break;
+      case OPECODES::MUL:   Mul();           break;
+      case OPECODES::DIV:   Div();           break;
+      case OPECODES::PRINT: Print();         break;
+    }
+    programCounter++;
+  }
+}
+
+void StackMachine::Push(int num)
 {
   _stack.push(num);
 }
 
-void StackMachine::add()
+void StackMachine::Add()
 {
   // もうちょっとちゃんとした例外投げた方がいい
   if (_stack.size() < 2)
@@ -92,7 +109,7 @@ void StackMachine::add()
   _stack.push(op1 + op2);
 }
 
-void StackMachine::sub()
+void StackMachine::Sub()
 {
   // もうちょっとちゃんとした例外投げた方がいい
   if (_stack.size() < 2)
@@ -107,7 +124,7 @@ void StackMachine::sub()
   _stack.push(op1 - op2);
 }
 
-void StackMachine::mul()
+void StackMachine::Mul()
 {
   // もうちょっとちゃんとした例外投げた方がいい
   if (_stack.size() < 2)
@@ -122,7 +139,7 @@ void StackMachine::mul()
   _stack.push(op1 * op2);
 }
 
-void StackMachine::div()
+void StackMachine::Div()
 {
   // もうちょっとちゃんとした例外投げた方がいい
   if (_stack.size() < 2)
@@ -145,12 +162,12 @@ void StackMachine::div()
   _stack.push(op1 / op2);
 }
 
-void StackMachine::print()
+void StackMachine::Print()
 {
   std::cout << _stack.top() << std::endl;
 }
 
-void StackMachine::pop()
+void StackMachine::Pop()
 {
   _stack.pop();
 }

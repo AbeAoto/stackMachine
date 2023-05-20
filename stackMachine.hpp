@@ -8,26 +8,28 @@ class StackMachine
 {
 public:
     // コンストラクタ
-    StackMachine(){};
+    StackMachine() : programCounter(0) {};
 
     // デストラクタ
     ~StackMachine(){};
 
-    void parseFile(std::string fileName);
+    void ParseFile(std::string fileName);
 
-    void push(int num);
+    void Push(int num);
 
-    void pop();
+    void Pop();
 
-    void add();
+    void Add();
 
-    void sub();
+    void Sub();
 
-    void mul();
+    void Mul();
 
-    void div();
+    void Div();
 
-    void print();
+    void Print();
+
+    void DoInstructions();
 
 private:
     enum OPECODES {
@@ -46,6 +48,7 @@ private:
     std::vector<unsigned int> _instructions;   /// 命令列
     std::stack<int> _stack;                      /// スタック
 
+    unsigned int programCounter;
     const unsigned short opecodeBytes = 16;
     const unsigned short operandBytes = 16;
 };
