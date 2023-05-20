@@ -31,6 +31,8 @@ public:
 
     void Jump(unsigned short label);
 
+    void Jpeq0(unsigned short label);
+
     void DoInstructions();
 
 private:
@@ -44,6 +46,7 @@ private:
         PRINT,
         LABEL,
         JUMP,
+        JPEQ0,
     };
 
     const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;

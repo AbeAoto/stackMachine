@@ -73,6 +73,12 @@ void StackMachine::ParseFile(std::string fileName)
       opecode = static_cast<unsigned short>(OPECODES::JUMP);
       operand = static_cast<unsigned short>(std::stoi(word));
     }
+    else if (word == "JPEQ0")
+    {
+      inputFile >> word;
+      opecode = static_cast<unsigned short>(OPECODES::JPEQ0);
+      operand = static_cast<unsigned short>(std::stoi(word));
+    }
     else
     {
       std::cerr << "This operation is not supported!" << std::endl;
@@ -110,7 +116,8 @@ void StackMachine::DoInstructions()
       case OPECODES::DIV:   Div();           break;
       case OPECODES::PRINT: Print();         break;
       case OPECODES::LABEL: break;
-      case OPECODES::JUMP:  Jump(operand);          break;
+      case OPECODES::JUMP:  Jump(operand);   break;
+      case OPECODES::JPEQ0: Jpeq0(operand);  break;
     }
     _programCounter++;
   }
@@ -206,6 +213,22 @@ void StackMachine::Jump(unsigned short label)
   _programCounter = address;
 }
 
+void StackMachine::Jpeq0(unsigned short label)
+{
+  if (_stack.size() < 1)
+  {
+    exit(1);
+  }
+
+  int stackTop = _stack.top();
+  _stack.pop();
+
+  if (stackTop == 0)
+  {
+    Jump(label);
+  }
+}
+
 const unsigned short StackMachine::GetOpecodeFromInstruction(const unsigned int instruction) const
 {
   return (instruction & ~((1 << _operandBytes) - 1)) >> _operandBytes;
@@ -248,7 +271,7 @@ void StackMachine::JampAddressValidCheck() const
   for (int i = 0; i < _instructions.size(); i++) {
     const OPECODES opecode = static_cast<OPECODES>((_instructions[i] & ~((1 << _operandBytes) - 1)) >> _operandBytes);
     const unsigned short label = (_labels[i] & ((1 << _labelAddressBytes) - 1));
-    if (opecode == OPECODES::JUMP && !IsLabelsContain(label))
+    if ((opecode == OPECODES::JUMP || opecode == OPECODES::JPEQ0) && !IsLabelsContain(label))
     {
       std::cerr << "JUMP operand label is not valid. : [" << i << "] JUMP " << label << std::endl;
       exit(1);
