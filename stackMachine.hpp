@@ -59,6 +59,9 @@ private:
     // ジャンプ判定
     void JampAddressValidCheck() const;
 
+    // 変数関連
+    unsigned short stringToHash(const std::string& str);
+
     // アーキテクチャ関連
     std::vector<unsigned int> _instructions;     /// 命令列
     std::vector<unsigned int> _labels;           /// ラベルとそのアドレスが入っている

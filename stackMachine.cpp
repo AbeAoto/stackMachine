@@ -41,13 +41,13 @@ void StackMachine::ParseFile(std::string fileName)
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::STORE);
-            operand = static_cast<short>(std::stoi(word));
+            operand = stringToHash(word);
         }
         else if (word == "LOAD")
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::LOAD);
-            operand = static_cast<short>(std::stoi(word));
+            operand = stringToHash(word);
         }
         else if (word == "ADD")
         {
@@ -336,4 +336,13 @@ void StackMachine::JampAddressValidCheck() const
             exit(1);
         }
     }
+}
+
+unsigned short StackMachine::stringToHash(const std::string& str)
+{
+    unsigned short hash = 0;
+    for (char ch : str) {
+        hash = (hash << 1) ^ ch;
+    }
+    return hash;
 }
