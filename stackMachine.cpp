@@ -16,6 +16,7 @@ void StackMachine::ParseFile(std::string fileName)
 
   // 命令分岐(多分あんまりよくない実装)
   std::string word;
+  unsigned short instructionNum = 0;
   while (inputFile >> word)
   {
     unsigned short opecode = 0;
@@ -29,27 +30,41 @@ void StackMachine::ParseFile(std::string fileName)
     }
     else if (word == "POP")
     {
-      opecode = static_cast<int>(OPECODES::POP);
+      opecode = static_cast<unsigned short>(OPECODES::POP);
     }
     else if (word == "ADD")
     {
-      opecode = static_cast<int>(OPECODES::ADD);
+      opecode = static_cast<unsigned short>(OPECODES::ADD);
     }
     else if (word == "SUB")
     {
-      opecode = static_cast<int>(OPECODES::SUB);
+      opecode = static_cast<unsigned short>(OPECODES::SUB);
     }
     else if (word == "MUL")
     {
-      opecode = static_cast<int>(OPECODES::MUL);
+      opecode = static_cast<unsigned short>(OPECODES::MUL);
     }
     else if (word == "DIV")
     {
-      opecode = static_cast<int>(OPECODES::DIV);
+      opecode = static_cast<unsigned short>(OPECODES::DIV);
     }
     else if (word == "PRINT")
     {
-      opecode = static_cast<int>(OPECODES::PRINT);
+      opecode = static_cast<unsigned short>(OPECODES::PRINT);
+    }
+    else if (word == "LABEL")
+    {
+      inputFile >> word;
+      opecode = static_cast<unsigned short>(OPECODES::LABEL);
+      operand = static_cast<unsigned short>(std::stoi(word));
+
+      if (IsLabelsContain(operand)) {
+        std::cerr << "Same label has already declared : " << operand << std::endl;
+        exit(1);
+      }
+
+      unsigned int label = (operand << _labelAddressBytes) | (instructionNum & ((1 << _labelAddressBytes) - 1));
+      _labels.push_back(label);
     }
     else
     {
@@ -58,8 +73,10 @@ void StackMachine::ParseFile(std::string fileName)
     }
 
     // オペコードとオペランドを命令列のフォーマットに変更
-    unsigned int instruction = (opecode << operandBytes) | (operand & ((1 << operandBytes) - 1));
+    unsigned int instruction = (opecode << _operandBytes) | (operand & ((1 << _operandBytes) - 1));
     _instructions.push_back(instruction);
+
+    instructionNum += 1;
   }
 
   inputFile.close();
@@ -67,12 +84,16 @@ void StackMachine::ParseFile(std::string fileName)
 
 void StackMachine::DoInstructions()
 {
-  programCounter = 0;
+  for (int i = 0; i < _labels.size(); i++) {
+    std::cout << "labels[" << i << "] : " << std::bitset<32>(_labels[i]) << std::endl;
+  }
+
+  _programCounter = 0;
   const unsigned int instructionNum = _instructions.size();
 
-  while(programCounter < instructionNum) {
+  while(_programCounter < instructionNum) {
 
-    const unsigned int instruction = _instructions[programCounter];
+    const unsigned int instruction = _instructions[_programCounter];
     const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(instruction));
     const short operand = GetOperandFromInstruction(instruction);
 
@@ -84,8 +105,9 @@ void StackMachine::DoInstructions()
       case OPECODES::MUL:   Mul();           break;
       case OPECODES::DIV:   Div();           break;
       case OPECODES::PRINT: Print();         break;
+      case OPECODES::LABEL: break;
     }
-    programCounter++;
+    _programCounter++;
   }
 }
 
@@ -174,10 +196,22 @@ void StackMachine::Pop()
 
 const unsigned short StackMachine::GetOpecodeFromInstruction(const unsigned int instruction) const
 {
-  return (instruction & ~((1 << operandBytes) - 1)) >> operandBytes;
+  return (instruction & ~((1 << _operandBytes) - 1)) >> _operandBytes;
 }
 
 const short StackMachine::GetOperandFromInstruction(const unsigned int instruction) const
 {
-  return instruction & ((1 << operandBytes) - 1);
+  return instruction & ((1 << _operandBytes) - 1);
+}
+
+const bool StackMachine::IsLabelsContain(const unsigned short label) const
+{
+  for (int i = 0; i < _labels.size(); i++) {
+    const unsigned short _label = (_labels[i] & ~((1 << _labelAddressBytes) - 1)) >> _labelAddressBytes;
+    if (_label == label) {
+      return true;
+    }
+  }
+
+  return false;
 }

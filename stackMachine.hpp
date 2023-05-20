@@ -8,7 +8,7 @@ class StackMachine
 {
 public:
     // コンストラクタ
-    StackMachine() : programCounter(0) {};
+    StackMachine() : _programCounter(0) {};
 
     // デストラクタ
     ~StackMachine(){};
@@ -40,15 +40,22 @@ private:
         MUL,
         DIV,
         PRINT,
+        LABEL,
     };
 
     const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;
     const short GetOperandFromInstruction(const unsigned int instruction) const;
 
-    std::vector<unsigned int> _instructions;   /// 命令列
+    const bool IsLabelsContain(const unsigned short label) const;
+
+    std::vector<unsigned int> _instructions;     /// 命令列
+    std::vector<unsigned int> _labels;         /// ラベルとそのアドレスが入っている
     std::stack<int> _stack;                      /// スタック
 
-    unsigned int programCounter;
-    const unsigned short opecodeBytes = 16;
-    const unsigned short operandBytes = 16;
+    unsigned int _programCounter;
+    const unsigned short _opecodeBytes = 16;
+    const unsigned short _operandBytes = 16;
+
+    const unsigned short _labelNameBytes = 16;
+    const unsigned short _labelAddressBytes = 16;
 };
