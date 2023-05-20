@@ -58,13 +58,20 @@ void StackMachine::ParseFile(std::string fileName)
       opecode = static_cast<unsigned short>(OPECODES::LABEL);
       operand = static_cast<unsigned short>(std::stoi(word));
 
-      if (IsLabelsContain(operand)) {
+      if (IsLabelsContain(operand))
+      {
         std::cerr << "Same label has already declared : " << operand << std::endl;
         exit(1);
       }
 
       unsigned int label = (operand << _labelAddressBytes) | (instructionNum & ((1 << _labelAddressBytes) - 1));
       _labels.push_back(label);
+    }
+    else if (word == "JUMP")
+    {
+      inputFile >> word;
+      opecode = static_cast<unsigned short>(OPECODES::JUMP);
+      operand = static_cast<unsigned short>(std::stoi(word));
     }
     else
     {
@@ -79,15 +86,12 @@ void StackMachine::ParseFile(std::string fileName)
     instructionNum += 1;
   }
 
+
   inputFile.close();
 }
 
 void StackMachine::DoInstructions()
 {
-  for (int i = 0; i < _labels.size(); i++) {
-    std::cout << "labels[" << i << "] : " << std::bitset<32>(_labels[i]) << std::endl;
-  }
-
   _programCounter = 0;
   const unsigned int instructionNum = _instructions.size();
 
@@ -106,6 +110,7 @@ void StackMachine::DoInstructions()
       case OPECODES::DIV:   Div();           break;
       case OPECODES::PRINT: Print();         break;
       case OPECODES::LABEL: break;
+      case OPECODES::JUMP:  Jump(operand);          break;
     }
     _programCounter++;
   }
@@ -115,6 +120,12 @@ void StackMachine::Push(int num)
 {
   _stack.push(num);
 }
+
+void StackMachine::Pop()
+{
+  _stack.pop();
+}
+
 
 void StackMachine::Add()
 {
@@ -189,9 +200,10 @@ void StackMachine::Print()
   std::cout << _stack.top() << std::endl;
 }
 
-void StackMachine::Pop()
+void StackMachine::Jump(unsigned short label)
 {
-  _stack.pop();
+  const unsigned short address = GetLabeledAddress(label);
+  _programCounter = address;
 }
 
 const unsigned short StackMachine::GetOpecodeFromInstruction(const unsigned int instruction) const
@@ -208,10 +220,38 @@ const bool StackMachine::IsLabelsContain(const unsigned short label) const
 {
   for (int i = 0; i < _labels.size(); i++) {
     const unsigned short _label = (_labels[i] & ~((1 << _labelAddressBytes) - 1)) >> _labelAddressBytes;
-    if (_label == label) {
+    if (_label == label)
+    {
       return true;
     }
   }
 
   return false;
+}
+
+const unsigned short StackMachine::GetLabeledAddress(const unsigned short label) const
+{
+  unsigned short address = -1;
+  for (int i = 0; i < _labels.size(); i++) {
+    const unsigned short _label = (_labels[i] & ~((1 << _labelAddressBytes) - 1)) >> _labelAddressBytes;
+    if (_label == label)
+    {
+      address = (_labels[i] & ((1 << _labelAddressBytes) - 1));
+      break;
+    }
+  }
+  return address;
+}
+
+void StackMachine::JampAddressValidCheck() const
+{
+  for (int i = 0; i < _instructions.size(); i++) {
+    const OPECODES opecode = static_cast<OPECODES>((_instructions[i] & ~((1 << _operandBytes) - 1)) >> _operandBytes);
+    const unsigned short label = (_labels[i] & ((1 << _labelAddressBytes) - 1));
+    if (opecode == OPECODES::JUMP && !IsLabelsContain(label))
+    {
+      std::cerr << "JUMP operand label is not valid. : [" << i << "] JUMP " << label << std::endl;
+      exit(1);
+    }
+  }
 }

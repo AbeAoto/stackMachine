@@ -29,6 +29,8 @@ public:
 
     void Print();
 
+    void Jump(unsigned short label);
+
     void DoInstructions();
 
 private:
@@ -41,12 +43,16 @@ private:
         DIV,
         PRINT,
         LABEL,
+        JUMP,
     };
 
     const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;
     const short GetOperandFromInstruction(const unsigned int instruction) const;
 
     const bool IsLabelsContain(const unsigned short label) const;
+    const unsigned short GetLabeledAddress(const unsigned short label) const;
+
+    void JampAddressValidCheck() const;
 
     std::vector<unsigned int> _instructions;     /// 命令列
     std::vector<unsigned int> _labels;         /// ラベルとそのアドレスが入っている
