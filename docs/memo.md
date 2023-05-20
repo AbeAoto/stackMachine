@@ -29,7 +29,7 @@ https://sylph.fuis.u-fukui.ac.jp/~moris/lecture/ARC/2020/ISA.pdf
 ジャンプ命令や関数呼び出しのためにラベルがほしい、_labels というメモリ領域を
 用意してそこにとび先アドレスを保持することにした。
 
-![labelsの仕様]("./img/labels.png")
+![labelsの仕様](./img/labels.png)
 
 ### JPEQ0
 
