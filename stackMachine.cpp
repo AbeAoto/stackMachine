@@ -59,7 +59,7 @@ void StackMachine::ParseFile(std::string fileName)
                 std::cerr << "Same Func has already declared : " << operand << std::endl;
                 exit(1);
             }
-            std::cout << "Func is defined " << (unsigned short)operand << std::endl;
+
             _labels[(unsigned short)operand] = instructionNum;
         }
         else if (word == "CALL")
@@ -118,6 +118,10 @@ void StackMachine::ParseFile(std::string fileName)
             opecode = static_cast<unsigned short>(OPECODES::JPEQ0);
             operand = stringToHash(word);
         }
+        else if (word == "END")
+        {
+            opecode = static_cast<unsigned short>(OPECODES::END);
+        }
         else
         {
             std::cerr << "This operation is not supported : opecode " << word << std::endl;
@@ -146,7 +150,6 @@ void StackMachine::DoInstructions()
 
         const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(instruction));
         const short operand = GetOperandFromInstruction(instruction);
-        std::cout << "instruction : " << opecode << std::endl;
 
         switch (opecode)
         {
@@ -193,6 +196,8 @@ void StackMachine::DoInstructions()
         case OPECODES::JPEQ0:
             Jpeq0(operand);
             break;
+        case OPECODES::END:
+            return;
         default:
             std::cerr << "This Opecode is not valid : " << opecode << std::endl;
             exit(1);
@@ -223,15 +228,13 @@ void StackMachine::Load(const unsigned short src)
 
 void StackMachine::Call(const unsigned short func)
 {
-    _callStack.push(_programCounter);  // 戻ってくる位置を保持
-    std::cout << "Call is called. callStack -> " << _callStack.top() << std::endl;
+    _callStack.push(_programCounter);
     Jump(func);
 }
 
 void StackMachine::Return()
 {
     unsigned short returnAddress = _callStack.top();
-    std::cout << "Return address " << returnAddress << std::endl;
     _callStack.pop();
     _programCounter = returnAddress;
 }

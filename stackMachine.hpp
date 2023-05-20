@@ -44,6 +44,7 @@ private:
         LABEL,
         JUMP,
         JPEQ0,
+        END,
     };
 
     // 命令関連
