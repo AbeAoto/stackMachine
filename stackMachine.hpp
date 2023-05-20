@@ -1,4 +1,5 @@
 ﻿#include <string>
+#include <vector>
 #include <stack>
 
 #pragma once
@@ -16,6 +17,8 @@ public:
 
     void push(int num);
 
+    void pop();
+
     void add();
 
     void sub();
@@ -26,8 +29,23 @@ public:
 
     void print();
 
-    void pop();
-
 private:
-    std::stack<int> _stack;
+    enum OPECODES {
+        PUSH,
+        POP,
+        ADD,
+        SUB,
+        MUL,
+        DIV,
+        PRINT,
+    };
+
+    const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;
+    const short GetOperandFromInstruction(const unsigned int instruction) const;
+
+    std::vector<unsigned int> _instructions;   /// 命令列
+    std::stack<int> _stack;                      /// スタック
+
+    const unsigned short opecodeBytes = 16;
+    const unsigned short operandBytes = 16;
 };
