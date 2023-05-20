@@ -22,6 +22,11 @@ void StackMachine::ParseFile(std::string fileName)
         unsigned short opecode = 0;
         short operand = 0;
 
+        // コメント行をとばす
+        if (word.find_first_of('#') == 0) {
+            continue;
+        }
+
         if (word == "PUSH")
         {
             inputFile >> word;
