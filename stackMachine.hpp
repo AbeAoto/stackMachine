@@ -2,6 +2,7 @@
 #include <vector>
 #include <stack>
 #include <limits.h>
+#include <iostream>
 
 #pragma once
 
@@ -9,7 +10,14 @@ class StackMachine
 {
 public:
     // コンストラクタ・デストラクタ
-    StackMachine() : _programCounter(0) { _variables.reserve(USHRT_MAX+1); };
+    StackMachine() : _programCounter(0)
+    {
+        _variables.reserve(USHRT_MAX+1);
+        _labels.reserve(USHRT_MAX+1);
+        for (int i = 0; i < USHRT_MAX+1; i++) {
+            _labels[i] = USHRT_MAX;
+        }
+    };
     ~StackMachine(){};
 
     /// @brief ファイルから命令を読み込み、正常判定を行う。
@@ -59,13 +67,13 @@ private:
     // ジャンプ判定
     void JampAddressValidCheck() const;
 
-    // 変数関連
+    // ハッシュ関連(ラベル・変数)
     unsigned short stringToHash(const std::string& str);
 
     // アーキテクチャ関連
     std::vector<unsigned int> _instructions;     /// 命令列
-    std::vector<unsigned int> _labels;           /// ラベルとそのアドレスが入っている
-    std::vector<unsigned int> _variables;        /// 変数ラベルとその値が入っている
+    std::vector<unsigned short> _labels;         /// ラベルとそのアドレスが入っている
+    std::vector<unsigned short> _variables;      /// 変数ラベルとその値が入っている
     std::stack<int> _stack;                      /// スタック
     unsigned int _programCounter;
 

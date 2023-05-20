@@ -73,7 +73,7 @@ void StackMachine::ParseFile(std::string fileName)
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::LABEL);
-            operand = static_cast<unsigned short>(std::stoi(word));
+            operand = stringToHash(word);
 
             if (IsLabelsContain(operand))
             {
@@ -81,24 +81,23 @@ void StackMachine::ParseFile(std::string fileName)
                 exit(1);
             }
 
-            unsigned int label = (operand << _labelAddressBytes) | (instructionNum & ((1 << _labelAddressBytes) - 1));
-            _labels.push_back(label);
+            _labels[operand] = instructionNum;
         }
         else if (word == "JUMP")
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::JUMP);
-            operand = static_cast<unsigned short>(std::stoi(word));
+            operand = stringToHash(word);
         }
         else if (word == "JPEQ0")
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::JPEQ0);
-            operand = static_cast<unsigned short>(std::stoi(word));
+            operand = stringToHash(word);
         }
         else
         {
-            std::cerr << "This operation is not supported!" << std::endl;
+            std::cerr << "This operation is not supported : opecode " << word << std::endl;
             exit(1);
         }
 
@@ -296,39 +295,21 @@ const short StackMachine::GetOperandFromInstruction(const unsigned int instructi
 
 const bool StackMachine::IsLabelsContain(const unsigned short label) const
 {
-    for (int i = 0; i < _labels.size(); i++)
-    {
-        const unsigned short _label = (_labels[i] & ~((1 << _labelAddressBytes) - 1)) >> _labelAddressBytes;
-        if (_label == label)
-        {
-            return true;
-        }
-    }
-
-    return false;
+    // すべてのbitが立っている(つまりUSHRT_MAX)だと未定義
+    return (_labels[label] == USHRT_MAX) ? false : true;
 }
 
 const unsigned short StackMachine::GetLabeledAddress(const unsigned short label) const
 {
-    unsigned short address = -1;
-    for (int i = 0; i < _labels.size(); i++)
-    {
-        const unsigned short _label = (_labels[i] & ~((1 << _labelAddressBytes) - 1)) >> _labelAddressBytes;
-        if (_label == label)
-        {
-            address = (_labels[i] & ((1 << _labelAddressBytes) - 1));
-            break;
-        }
-    }
-    return address;
+    return (_labels[label] & ((1 << _labelAddressBytes) - 1));
 }
 
 void StackMachine::JampAddressValidCheck() const
 {
     for (int i = 0; i < _instructions.size(); i++)
     {
-        const OPECODES opecode = static_cast<OPECODES>((_instructions[i] & ~((1 << _operandBytes) - 1)) >> _operandBytes);
-        const unsigned short label = (_labels[i] & ((1 << _labelAddressBytes) - 1));
+        const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(_instructions[i]));
+        const unsigned short label = GetOperandFromInstruction(_instructions[i]);
         if ((opecode == OPECODES::JUMP || opecode == OPECODES::JPEQ0) && !IsLabelsContain(label))
         {
             std::cerr << "JUMP operand label is not valid. : [" << i << "] JUMP " << label << std::endl;
