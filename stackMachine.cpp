@@ -43,6 +43,12 @@ void StackMachine::ParseFile(std::string fileName)
             opecode = static_cast<unsigned short>(OPECODES::STORE);
             operand = static_cast<short>(std::stoi(word));
         }
+        else if (word == "LOAD")
+        {
+            inputFile >> word;
+            opecode = static_cast<unsigned short>(OPECODES::LOAD);
+            operand = static_cast<short>(std::stoi(word));
+        }
         else if (word == "ADD")
         {
             opecode = static_cast<unsigned short>(OPECODES::ADD);
@@ -129,6 +135,9 @@ void StackMachine::DoInstructions()
         case OPECODES::STORE:
             Store(operand);
             break;
+        case OPECODES::LOAD:
+            Load(operand);
+            break;
         case OPECODES::ADD:
             Add();
             break;
@@ -152,6 +161,9 @@ void StackMachine::DoInstructions()
         case OPECODES::JPEQ0:
             Jpeq0(operand);
             break;
+        default:
+            std::cerr << "This Opecode is not valid : " << opecode << std::endl;
+            exit(1);
         }
         _programCounter++;
     }
@@ -171,7 +183,11 @@ void StackMachine::Store(const unsigned short dst)
 {
     _variables[dst] = _stack.top();
     _stack.pop();
-    std::cout << "Store is called : " << _variables[dst] << std::endl;
+}
+
+void StackMachine::Load(const unsigned short src)
+{
+    Push(_variables[src]);
 }
 
 void StackMachine::Add()

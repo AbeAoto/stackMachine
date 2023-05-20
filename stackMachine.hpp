@@ -24,6 +24,7 @@ private:
         PUSH,
         POP,
         STORE,
+        LOAD,
         ADD,
         SUB,
         MUL,
@@ -38,6 +39,7 @@ private:
     void Push(int num);
     void Pop();
     void Store(const unsigned short dst);
+    void Load(const unsigned short src);
     void Add();
     void Sub();
     void Mul();
