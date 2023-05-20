@@ -182,7 +182,6 @@ void StackMachine::Pop()
 void StackMachine::Store(const unsigned short dst)
 {
     _variables[dst] = _stack.top();
-    _stack.pop();
 }
 
 void StackMachine::Load(const unsigned short src)
