@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <vector>
 #include <stack>
+#include <limits.h>
 
 #pragma once
 
@@ -8,7 +9,7 @@ class StackMachine
 {
 public:
     // コンストラクタ・デストラクタ
-    StackMachine() : _programCounter(0) {};
+    StackMachine() : _programCounter(0) { _variables.reserve(USHRT_MAX+1); };
     ~StackMachine(){};
 
     /// @brief ファイルから命令を読み込み、正常判定を行う。
@@ -22,6 +23,7 @@ private:
     enum OPECODES {
         PUSH,
         POP,
+        STORE,
         ADD,
         SUB,
         MUL,
@@ -35,6 +37,7 @@ private:
     // 命令関連
     void Push(int num);
     void Pop();
+    void Store(const unsigned short dst);
     void Add();
     void Sub();
     void Mul();
@@ -56,7 +59,8 @@ private:
 
     // アーキテクチャ関連
     std::vector<unsigned int> _instructions;     /// 命令列
-    std::vector<unsigned int> _labels;         /// ラベルとそのアドレスが入っている
+    std::vector<unsigned int> _labels;           /// ラベルとそのアドレスが入っている
+    std::vector<unsigned int> _variables;        /// 変数ラベルとその値が入っている
     std::stack<int> _stack;                      /// スタック
     unsigned int _programCounter;
 

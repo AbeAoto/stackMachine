@@ -37,6 +37,12 @@ void StackMachine::ParseFile(std::string fileName)
         {
             opecode = static_cast<unsigned short>(OPECODES::POP);
         }
+        else if (word == "STORE")
+        {
+            inputFile >> word;
+            opecode = static_cast<unsigned short>(OPECODES::STORE);
+            operand = static_cast<short>(std::stoi(word));
+        }
         else if (word == "ADD")
         {
             opecode = static_cast<unsigned short>(OPECODES::ADD);
@@ -120,6 +126,9 @@ void StackMachine::DoInstructions()
         case OPECODES::POP:
             Pop();
             break;
+        case OPECODES::STORE:
+            Store(operand);
+            break;
         case OPECODES::ADD:
             Add();
             break;
@@ -156,6 +165,13 @@ void StackMachine::Push(int num)
 void StackMachine::Pop()
 {
     _stack.pop();
+}
+
+void StackMachine::Store(const unsigned short dst)
+{
+    _variables[dst] = _stack.top();
+    _stack.pop();
+    std::cout << "Store is called : " << _variables[dst] << std::endl;
 }
 
 void StackMachine::Add()
