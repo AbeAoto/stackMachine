@@ -33,6 +33,9 @@ private:
         POP,
         STORE,
         LOAD,
+        FUNC,
+        CALL,
+        RET,
         ADD,
         SUB,
         MUL,
@@ -48,6 +51,8 @@ private:
     void Pop();
     void Store(const unsigned short dst);
     void Load(const unsigned short src);
+    void Call(const unsigned short func);
+    void Return();
     void Add();
     void Sub();
     void Mul();
@@ -75,6 +80,7 @@ private:
     std::vector<unsigned short> _labels;         /// ラベルとそのアドレスが入っている
     std::vector<unsigned short> _variables;      /// 変数ラベルとその値が入っている
     std::stack<int> _stack;                      /// スタック
+    std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
     unsigned int _programCounter;
 
     // 定数関連

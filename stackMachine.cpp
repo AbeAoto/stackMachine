@@ -49,6 +49,29 @@ void StackMachine::ParseFile(std::string fileName)
             opecode = static_cast<unsigned short>(OPECODES::LOAD);
             operand = stringToHash(word);
         }
+        else if (word == "FUNC")
+        {
+            inputFile >> word;
+            opecode = static_cast<unsigned short>(OPECODES::FUNC);
+            operand = stringToHash(word);
+            if (IsLabelsContain(operand))
+            {
+                std::cerr << "Same Func has already declared : " << operand << std::endl;
+                exit(1);
+            }
+            std::cout << "Func is defined " << (unsigned short)operand << std::endl;
+            _labels[(unsigned short)operand] = instructionNum;
+        }
+        else if (word == "CALL")
+        {
+            inputFile >> word;
+            opecode = static_cast<unsigned short>(OPECODES::CALL);
+            operand = stringToHash(word);
+        }
+        else if (word == "RET")
+        {
+            opecode = static_cast<unsigned short>(OPECODES::RET);
+        }
         else if (word == "ADD")
         {
             opecode = static_cast<unsigned short>(OPECODES::ADD);
@@ -81,7 +104,7 @@ void StackMachine::ParseFile(std::string fileName)
                 exit(1);
             }
 
-            _labels[operand] = instructionNum;
+            _labels[(unsigned short)operand] = instructionNum;
         }
         else if (word == "JUMP")
         {
@@ -120,8 +143,10 @@ void StackMachine::DoInstructions()
     {
 
         const unsigned int instruction = _instructions[_programCounter];
+
         const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(instruction));
         const short operand = GetOperandFromInstruction(instruction);
+        std::cout << "instruction : " << opecode << std::endl;
 
         switch (opecode)
         {
@@ -136,6 +161,14 @@ void StackMachine::DoInstructions()
             break;
         case OPECODES::LOAD:
             Load(operand);
+            break;
+        case OPECODES::FUNC:
+            break;
+        case OPECODES::CALL:
+            Call(operand);
+            break;
+        case OPECODES::RET:
+            Return();
             break;
         case OPECODES::ADD:
             Add();
@@ -186,6 +219,21 @@ void StackMachine::Store(const unsigned short dst)
 void StackMachine::Load(const unsigned short src)
 {
     Push(_variables[src]);
+}
+
+void StackMachine::Call(const unsigned short func)
+{
+    _callStack.push(_programCounter);  // 戻ってくる位置を保持
+    std::cout << "Call is called. callStack -> " << _callStack.top() << std::endl;
+    Jump(func);
+}
+
+void StackMachine::Return()
+{
+    unsigned short returnAddress = _callStack.top();
+    std::cout << "Return address " << returnAddress << std::endl;
+    _callStack.pop();
+    _programCounter = returnAddress;
 }
 
 void StackMachine::Add()
