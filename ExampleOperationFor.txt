@@ -1,0 +1,29 @@
+#簡単なfor文っぽい動きをする
+
+PUSH 10
+STORE ForLimit
+POP
+
+PUSH 0
+STORE Idx
+POP
+
+LABEL ForStart
+
+#Idxのインクリメント 
+LOAD Idx
+PUSH 1
+ADD
+STORE Idx
+PRINT
+
+#脱出判定
+LOAD ForLimit
+SUB
+JPEQ0 ForEnd
+
+JUMP ForStart
+
+LABEL ForEnd
+
+END
