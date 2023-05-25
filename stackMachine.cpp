@@ -41,13 +41,13 @@ void StackMachine::ParseFile(std::string fileName)
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::STORE);
-            operand = stringToHash(word);
+            operand = static_cast<short>(std::stoi(word));
         }
         else if (word == "LOAD")
         {
             inputFile >> word;
             opecode = static_cast<unsigned short>(OPECODES::LOAD);
-            operand = stringToHash(word);
+            operand = static_cast<short>(std::stoi(word));
         }
         else if (word == "FUNC")
         {
