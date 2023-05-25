@@ -1,24 +1,26 @@
 #簡単なfor文っぽい動きをする
 
+#ループインデックスの最終値保存101番地
 PUSH 10
-STORE ForLimit
+STORE 101
 POP
 
+#ループインデックスの保存100番地
 PUSH 0
-STORE Idx
+STORE 100
 POP
 
 LABEL ForStart
 
-#Idxのインクリメント 
-LOAD Idx
+#Idxのインクリメント
+LOAD 100
 PUSH 1
 ADD
-STORE Idx
+STORE 100
 PRINT
 
 #脱出判定
-LOAD ForLimit
+LOAD 101
 SUB
 JPEQ0 ForEnd
 

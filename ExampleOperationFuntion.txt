@@ -1,0 +1,51 @@
+#簡単な関数を使った動作を行う
+#ax^2+bx+cの点x(整数)における傾きを求める
+#このテストだと答えは4x+3(X=3)より15
+
+#aは100番地に代入=2
+PUSH 2
+STORE 100
+POP
+
+#bは101番地に代入=3
+PUSH 3
+STORE 101
+POP
+
+#cは102番地に代入=4
+PUSH 4
+STORE 102
+POP
+
+#xは103番地に代入=3
+PUSH 3
+STORE 103
+POP
+
+CALL CalcGrad
+
+#結果の出力
+LOAD 104
+PRINT
+END
+
+
+
+#傾きを求める
+#答えを104番地に入れる
+FUNC CalcGrad
+
+#2axの計算
+PUSH 2
+LOAD 100
+MUL
+LOAD 103
+MUL
+
+#+bの計算
+LOAD 101
+ADD
+
+#結果の保存
+STORE 104
+RET
