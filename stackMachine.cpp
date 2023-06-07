@@ -15,10 +15,12 @@ void StackMachine::DoInstructions()
 
         const unsigned int instructionIdx = 0;
         OPECODES op = StringToOpecodes(_instructions2[_programCounter][instructionIdx]);
+        std::cout << "op : " << op << std::endl;
         switch (op)
         {
         case OPECODES::PUSH:     Push(_instructions2[_programCounter]);  break;
         case OPECODES::POP:      Pop();  break;
+        case OPECODES::SETLOCAL: SetLocal(_instructions2[_programCounter]);  break;
         case OPECODES::ADD:      Add();  break;
         case OPECODES::SUB:      Sub();  break;
         case OPECODES::MUL:      Mul();  break;
@@ -49,6 +51,19 @@ void StackMachine::Store(const unsigned short dst)
 void StackMachine::Load(const unsigned short src)
 {
   // Push(_variables[src]);
+}
+
+void StackMachine::SetLocal(std::vector<std::string> inst)
+{
+  // テーブルサイズ調整
+  if (_variables2[_callStackDepth].size() <= _blockDepth)
+  {
+      _variables2[_callStackDepth].resize(_blockDepth+1);
+  }
+
+  std::string variableName = inst[1];
+  std::map<std::string, int> varMap = _variables2[_callStackDepth][_blockDepth];
+  varMap[variableName] = _stack.top();
 }
 
 void StackMachine::Call(const unsigned short func)
@@ -202,6 +217,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
     else if (instruction == "POP")       return OPECODES::POP;
     else if (instruction == "STORE")     return OPECODES::STORE;
     else if (instruction == "LOAD")      return OPECODES::LOAD;
+    else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
     else if (instruction == "CALL")      return OPECODES::CALL;
     else if (instruction == "ADD")       return OPECODES::ADD;
     else if (instruction == "SUB")       return OPECODES::SUB;

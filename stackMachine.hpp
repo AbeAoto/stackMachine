@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <vector>
 #include <stack>
+#include <map>
 #include <limits.h>
 #include <iostream>
 #include "InputMgr.hpp"
@@ -12,6 +13,7 @@ enum OPECODES {
         POP,
         STORE,
         LOAD,
+        SETLOCAL,
         FUNC,
         CALL,
         RET,
@@ -30,14 +32,14 @@ class StackMachine
 {
 public:
     // コンストラクタ・デストラクタ
-    StackMachine(std::string fileName) : _programCounter(0)
+  StackMachine(std::string fileName) : _programCounter(0), _callStackDepth(1), _blockDepth(0)
     {
         _variables.reserve(USHRT_MAX+1);
         _labels.reserve(USHRT_MAX+1);
         for (int i = 0; i < USHRT_MAX+1; i++) {
             _labels[i] = USHRT_MAX;
         }
-
+        _variables2.resize(2);
         std::cout << fileName << std::endl;
         _inputMgr = new InputMgr(fileName);
     };
@@ -56,6 +58,7 @@ private:
     void Pop();
     void Store(const unsigned short dst);
     void Load(const unsigned short src);
+    void SetLocal(std::vector<std::string> inst);
     void Call(const unsigned short func);
     void Add();
     void Sub();
@@ -86,9 +89,12 @@ private:
     std::vector<unsigned int> _instructions;     /// 命令列
     std::vector<unsigned short> _labels;         /// ラベルとそのアドレスが入っている
     std::vector<unsigned short> _variables;      /// 変数ラベルとその値が入っている
+    std::vector<std::vector<std::map<std::string, int>>> _variables2;
     std::stack<int> _stack;                      /// スタック
     std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
     unsigned int _programCounter;
+    unsigned int _blockDepth;
+    unsigned int _callStackDepth;
 
     // 定数関連
     const unsigned short _opecodeBytes = 16;
