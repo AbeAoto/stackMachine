@@ -3,211 +3,36 @@
 #include <fstream>
 #include <bitset>
 
-void StackMachine::ParseFile(std::string fileName)
-{
-    std::ifstream inputFile(fileName);
-
-    // オープンエラー処理
-    if (!inputFile.is_open())
-    {
-        std::cerr << "Could not open the file : " << fileName << std::endl;
-        exit(1);
-    }
-
-    // 命令分岐(多分あんまりよくない実装)
-    std::string word;
-    unsigned short instructionNum = 0;
-    while (inputFile >> word)
-    {
-        unsigned short opecode = 0;
-        short operand = 0;
-
-        // コメント行をとばす
-        if (word.find_first_of('#') == 0) {
-            continue;
-        }
-
-        if (word == "PUSH")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::PUSH);
-            operand = static_cast<short>(std::stoi(word));
-        }
-        else if (word == "POP")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::POP);
-        }
-        else if (word == "STORE")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::STORE);
-            operand = static_cast<short>(std::stoi(word));
-        }
-        else if (word == "LOAD")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::LOAD);
-            operand = static_cast<short>(std::stoi(word));
-        }
-        else if (word == "FUNC")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::FUNC);
-            operand = stringToHash(word);
-            if (IsLabelsContain(operand))
-            {
-                std::cerr << "Same Func has already declared : " << operand << std::endl;
-                exit(1);
-            }
-
-            _labels[(unsigned short)operand] = instructionNum;
-        }
-        else if (word == "CALL")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::CALL);
-            operand = stringToHash(word);
-        }
-        else if (word == "RET")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::RET);
-        }
-        else if (word == "ADD")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::ADD);
-        }
-        else if (word == "SUB")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::SUB);
-        }
-        else if (word == "MUL")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::MUL);
-        }
-        else if (word == "DIV")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::DIV);
-        }
-        else if (word == "PRINT")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::PRINT);
-        }
-        else if (word == "LABEL")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::LABEL);
-            operand = stringToHash(word);
-
-            if (IsLabelsContain(operand))
-            {
-                std::cerr << "Same label has already declared : " << operand << std::endl;
-                exit(1);
-            }
-
-            _labels[(unsigned short)operand] = instructionNum;
-        }
-        else if (word == "JUMP")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::JUMP);
-            operand = stringToHash(word);
-        }
-        else if (word == "JPEQ0")
-        {
-            inputFile >> word;
-            opecode = static_cast<unsigned short>(OPECODES::JPEQ0);
-            operand = stringToHash(word);
-        }
-        else if (word == "END")
-        {
-            opecode = static_cast<unsigned short>(OPECODES::END);
-        }
-        else
-        {
-            std::cerr << "This operation is not supported : opecode " << word << std::endl;
-            exit(1);
-        }
-
-        // オペコードとオペランドを命令列のフォーマットに変更
-        unsigned int instruction = (opecode << _operandBytes) | (operand & ((1 << _operandBytes) - 1));
-        _instructions.push_back(instruction);
-
-        instructionNum += 1;
-    }
-
-    inputFile.close();
-}
-
 void StackMachine::DoInstructions()
 {
     _programCounter = 0;
-    const unsigned int instructionNum = _instructions.size();
 
-    while (_programCounter < instructionNum)
-    {
-
-        const unsigned int instruction = _instructions[_programCounter];
-
-        const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(instruction));
-        const short operand = GetOperandFromInstruction(instruction);
-
-        switch (opecode)
+    while (true) {
+        if (_instructions2.size() - 1 <= _programCounter || _instructions2.size() == 0)
         {
-        case OPECODES::PUSH:
-            Push(operand);
-            break;
-        case OPECODES::POP:
-            Pop();
-            break;
-        case OPECODES::STORE:
-            Store(operand);
-            break;
-        case OPECODES::LOAD:
-            Load(operand);
-            break;
-        case OPECODES::FUNC:
-            break;
-        case OPECODES::CALL:
-            Call(operand);
-            break;
-        case OPECODES::RET:
-            Return();
-            break;
-        case OPECODES::ADD:
-            Add();
-            break;
-        case OPECODES::SUB:
-            Sub();
-            break;
-        case OPECODES::MUL:
-            Mul();
-            break;
-        case OPECODES::DIV:
-            Div();
-            break;
-        case OPECODES::PRINT:
-            Print();
-            break;
-        case OPECODES::LABEL:
-            break;
-        case OPECODES::JUMP:
-            Jump(operand);
-            break;
-        case OPECODES::JPEQ0:
-            Jpeq0(operand);
-            break;
-        case OPECODES::END:
-            return;
-        default:
-            std::cerr << "This Opecode is not valid : " << opecode << std::endl;
-            exit(1);
+            _instructions2.push_back(_inputMgr->GetLineInstruction());
+        }
+
+        const unsigned int instructionIdx = 0;
+        OPECODES op = StringToOpecodes(_instructions2[_programCounter][instructionIdx]);
+        switch (op)
+        {
+        case OPECODES::PUSH:     Push(_instructions2[_programCounter]);  break;
+        case OPECODES::POP:      Pop();  break;
+        case OPECODES::ADD:      Add();  break;
+        case OPECODES::SUB:      Sub();  break;
+        case OPECODES::MUL:      Mul();  break;
+        case OPECODES::DIV:      Div();  break;
+        case OPECODES::PRINT:    Print();  break;
+        case OPECODES::END:      return;
         }
         _programCounter++;
     }
 }
 
-void StackMachine::Push(int num)
+void StackMachine::Push(std::vector<std::string> inst)
 {
+    int num = std::stoi(inst[1]);
     _stack.push(num);
 }
 
@@ -223,20 +48,13 @@ void StackMachine::Store(const unsigned short dst)
 
 void StackMachine::Load(const unsigned short src)
 {
-    Push(_variables[src]);
+  // Push(_variables[src]);
 }
 
 void StackMachine::Call(const unsigned short func)
 {
     _callStack.push(_programCounter);
     Jump(func);
-}
-
-void StackMachine::Return()
-{
-    unsigned short returnAddress = _callStack.top();
-    _callStack.pop();
-    _programCounter = returnAddress;
 }
 
 void StackMachine::Add()
@@ -376,4 +194,21 @@ unsigned short StackMachine::stringToHash(const std::string& str)
         hash = (hash << 1) ^ ch;
     }
     return hash;
+}
+
+OPECODES StackMachine::StringToOpecodes(std::string instruction)
+{
+    if (instruction ==  "PUSH")          return OPECODES::PUSH;
+    else if (instruction == "POP")       return OPECODES::POP;
+    else if (instruction == "STORE")     return OPECODES::STORE;
+    else if (instruction == "LOAD")      return OPECODES::LOAD;
+    else if (instruction == "CALL")      return OPECODES::CALL;
+    else if (instruction == "ADD")       return OPECODES::ADD;
+    else if (instruction == "SUB")       return OPECODES::SUB;
+    else if (instruction == "MUL")       return OPECODES::MUL;
+    else if (instruction == "DIV")       return OPECODES::DIV;
+    else if (instruction == "PRINT")     return OPECODES::PRINT;
+    else if (instruction == "JUMP")      return OPECODES::JUMP;
+    else if (instruction == "JPEQ0")     return OPECODES::JPEQ0;
+    else                                 return OPECODES::END;
 }

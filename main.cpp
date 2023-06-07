@@ -3,21 +3,10 @@
 
 int main(void)
 {
-    StackMachine* sm = new StackMachine();
+    StackMachine* sm = new StackMachine("./ExampleOperation.txt");
 
-    std::cout << "ExampleOperationFor.txt start." << std::endl;
-    sm->ParseFile("./ExampleOperationFor.txt");
+    std::cout << "ExampleOperation.txt start." << std::endl;
     sm->DoInstructions();
-
-    delete sm;
-
-    StackMachine* sm2 = new StackMachine();
-
-    std::cout << "ExampleOperationFunction.txt start." << std::endl;
-    sm2->ParseFile("./ExampleOperationFuntion.txt");
-    sm2->DoInstructions();
-
-    delete sm2;
-
+    
     return 0;
 }

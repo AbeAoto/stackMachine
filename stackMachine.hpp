@@ -3,32 +3,11 @@
 #include <stack>
 #include <limits.h>
 #include <iostream>
+#include "InputMgr.hpp"
 
 #pragma once
 
-class StackMachine
-{
-public:
-    // コンストラクタ・デストラクタ
-    StackMachine() : _programCounter(0)
-    {
-        _variables.reserve(USHRT_MAX+1);
-        _labels.reserve(USHRT_MAX+1);
-        for (int i = 0; i < USHRT_MAX+1; i++) {
-            _labels[i] = USHRT_MAX;
-        }
-    };
-    ~StackMachine(){};
-
-    /// @brief ファイルから命令を読み込み、正常判定を行う。
-    /// @param fileName  読み込みファイル名
-    void ParseFile(std::string fileName);
-
-    /// @brief 読み込んだ命令を実行する
-    void DoInstructions();
-
-private:
-    enum OPECODES {
+enum OPECODES {
         PUSH,
         POP,
         STORE,
@@ -45,15 +24,39 @@ private:
         JUMP,
         JPEQ0,
         END,
-    };
+};
 
+class StackMachine
+{
+public:
+    // コンストラクタ・デストラクタ
+    StackMachine(std::string fileName) : _programCounter(0)
+    {
+        _variables.reserve(USHRT_MAX+1);
+        _labels.reserve(USHRT_MAX+1);
+        for (int i = 0; i < USHRT_MAX+1; i++) {
+            _labels[i] = USHRT_MAX;
+        }
+
+        std::cout << fileName << std::endl;
+        _inputMgr = new InputMgr(fileName);
+    };
+    ~StackMachine(){  delete _inputMgr; };
+
+    /// @brief ファイルから命令を読み込み、正常判定を行う。
+    /// @param fileName  読み込みファイル名
+    void ParseFile();
+
+    /// @brief 読み込んだ命令を実行する
+    void DoInstructions();
+
+private:
     // 命令関連
-    void Push(int num);
+    void Push(std::vector<std::string> inst);
     void Pop();
     void Store(const unsigned short dst);
     void Load(const unsigned short src);
     void Call(const unsigned short func);
-    void Return();
     void Add();
     void Sub();
     void Mul();
@@ -76,7 +79,10 @@ private:
     // ハッシュ関連(ラベル・変数)
     unsigned short stringToHash(const std::string& str);
 
+    OPECODES StringToOpecodes(std::string instruction);
+
     // アーキテクチャ関連
+    std::vector<std::vector<std::string>> _instructions2;
     std::vector<unsigned int> _instructions;     /// 命令列
     std::vector<unsigned short> _labels;         /// ラベルとそのアドレスが入っている
     std::vector<unsigned short> _variables;      /// 変数ラベルとその値が入っている
@@ -90,4 +96,7 @@ private:
 
     const unsigned short _labelNameBytes = 16;
     const unsigned short _labelAddressBytes = 16;
+
+    // 補助クラス
+    InputMgr* _inputMgr;
 };
