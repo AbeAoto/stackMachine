@@ -15,12 +15,12 @@ void StackMachine::DoInstructions()
 
         const unsigned int instructionIdx = 0;
         OPECODES op = StringToOpecodes(_instructions2[_programCounter][instructionIdx]);
-        std::cout << "op : " << op << std::endl;
         switch (op)
         {
         case OPECODES::PUSH:     Push(_instructions2[_programCounter]);  break;
         case OPECODES::POP:      Pop();  break;
         case OPECODES::SETLOCAL: SetLocal(_instructions2[_programCounter]);  break;
+        case OPECODES::GETLOCAL: GetLocal(_instructions2[_programCounter]);  break;
         case OPECODES::ADD:      Add();  break;
         case OPECODES::SUB:      Sub();  break;
         case OPECODES::MUL:      Mul();  break;
@@ -62,8 +62,33 @@ void StackMachine::SetLocal(std::vector<std::string> inst)
   }
 
   std::string variableName = inst[1];
-  std::map<std::string, int> varMap = _variables2[_callStackDepth][_blockDepth];
-  varMap[variableName] = _stack.top();
+  std::map<std::string, int>* varMap = &_variables2[_callStackDepth][_blockDepth];
+  (*varMap)[variableName] = _stack.top();
+}
+
+void StackMachine::GetLocal(std::vector<std::string> inst)
+{
+  std::string variableName = inst[1];
+  for (int blockDepth = _blockDepth; 0 <= blockDepth; blockDepth--) {
+
+    // その階層で変数が宣言されていない場合スキップ
+    if (_variables2[_callStackDepth].size() <= blockDepth)
+      continue;
+
+    std::map<std::string, int> varMap = _variables2[_callStackDepth][blockDepth];
+    auto varInfo = _variables2[_callStackDepth][blockDepth].find(variableName);
+
+    // 要素が存在していた場合
+    if (varInfo != _variables2[_callStackDepth][blockDepth].end())
+    {
+      _stack.push(varInfo->second);
+      return;
+    }
+  }
+
+  std::cerr << "[err] variable \"" << variableName
+            << "\" is not declared.   Line : " << _programCounter <<  std::endl;
+  exit(1);
 }
 
 void StackMachine::Call(const unsigned short func)
@@ -218,6 +243,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
     else if (instruction == "STORE")     return OPECODES::STORE;
     else if (instruction == "LOAD")      return OPECODES::LOAD;
     else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
+    else if (instruction == "GETLOCAL")  return OPECODES::GETLOCAL;
     else if (instruction == "CALL")      return OPECODES::CALL;
     else if (instruction == "ADD")       return OPECODES::ADD;
     else if (instruction == "SUB")       return OPECODES::SUB;

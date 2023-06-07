@@ -14,6 +14,7 @@ enum OPECODES {
         STORE,
         LOAD,
         SETLOCAL,
+        GETLOCAL,
         FUNC,
         CALL,
         RET,
@@ -59,6 +60,7 @@ private:
     void Store(const unsigned short dst);
     void Load(const unsigned short src);
     void SetLocal(std::vector<std::string> inst);
+    void GetLocal(std::vector<std::string> inst);
     void Call(const unsigned short func);
     void Add();
     void Sub();
