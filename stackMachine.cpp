@@ -43,26 +43,16 @@ void StackMachine::Pop()
     _stack.pop();
 }
 
-void StackMachine::Store(const unsigned short dst)
-{
-    _variables[dst] = _stack.top();
-}
-
-void StackMachine::Load(const unsigned short src)
-{
-  // Push(_variables[src]);
-}
-
 void StackMachine::SetLocal(std::vector<std::string> inst)
 {
   // テーブルサイズ調整
-  if (_variables2[_callStackDepth].size() <= _blockDepth)
+  if (_variables[_callStackDepth].size() <= _blockDepth)
   {
-      _variables2[_callStackDepth].resize(_blockDepth+1);
+      _variables[_callStackDepth].resize(_blockDepth+1);
   }
 
   std::string variableName = inst[1];
-  std::map<std::string, int>* varMap = &_variables2[_callStackDepth][_blockDepth];
+  std::map<std::string, int>* varMap = &_variables[_callStackDepth][_blockDepth];
   (*varMap)[variableName] = _stack.top();
 }
 
@@ -72,14 +62,14 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
   for (int blockDepth = _blockDepth; 0 <= blockDepth; blockDepth--) {
 
     // その階層で変数が宣言されていない場合スキップ
-    if (_variables2[_callStackDepth].size() <= blockDepth)
+    if (_variables[_callStackDepth].size() <= blockDepth)
       continue;
 
-    std::map<std::string, int> varMap = _variables2[_callStackDepth][blockDepth];
-    auto varInfo = _variables2[_callStackDepth][blockDepth].find(variableName);
+    std::map<std::string, int> varMap = _variables[_callStackDepth][blockDepth];
+    auto varInfo = _variables[_callStackDepth][blockDepth].find(variableName);
 
     // 要素が存在していた場合
-    if (varInfo != _variables2[_callStackDepth][blockDepth].end())
+    if (varInfo != _variables[_callStackDepth][blockDepth].end())
     {
       _stack.push(varInfo->second);
       return;
@@ -240,8 +230,6 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
 {
     if (instruction ==  "PUSH")          return OPECODES::PUSH;
     else if (instruction == "POP")       return OPECODES::POP;
-    else if (instruction == "STORE")     return OPECODES::STORE;
-    else if (instruction == "LOAD")      return OPECODES::LOAD;
     else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
     else if (instruction == "GETLOCAL")  return OPECODES::GETLOCAL;
     else if (instruction == "CALL")      return OPECODES::CALL;

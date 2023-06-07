@@ -11,8 +11,6 @@
 enum OPECODES {
         PUSH,
         POP,
-        STORE,
-        LOAD,
         SETLOCAL,
         GETLOCAL,
         FUNC,
@@ -40,7 +38,7 @@ public:
         for (int i = 0; i < USHRT_MAX+1; i++) {
             _labels[i] = USHRT_MAX;
         }
-        _variables2.resize(2);
+        _variables.resize(2);
         std::cout << fileName << std::endl;
         _inputMgr = new InputMgr(fileName);
     };
@@ -57,8 +55,6 @@ private:
     // 命令関連
     void Push(std::vector<std::string> inst);
     void Pop();
-    void Store(const unsigned short dst);
-    void Load(const unsigned short src);
     void SetLocal(std::vector<std::string> inst);
     void GetLocal(std::vector<std::string> inst);
     void Call(const unsigned short func);
@@ -90,8 +86,7 @@ private:
     std::vector<std::vector<std::string>> _instructions2;
     std::vector<unsigned int> _instructions;     /// 命令列
     std::vector<unsigned short> _labels;         /// ラベルとそのアドレスが入っている
-    std::vector<unsigned short> _variables;      /// 変数ラベルとその値が入っている
-    std::vector<std::vector<std::map<std::string, int>>> _variables2;
+    std::vector<std::vector<std::map<std::string, int>>> _variables;
     std::stack<int> _stack;                      /// スタック
     std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
     unsigned int _programCounter;
