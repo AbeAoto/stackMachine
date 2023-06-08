@@ -1,0 +1,23 @@
+インデント
+GETLOCAL i
+PUSH 1
+ADD
+SETLOCAL i
+POP
+
+
+
+for文
+PUSH 終わりたいインデックス
+SETLOCAL ForEndNum
+POP
+BeginForLabel:
+// 何らかの処理
+
+// インデント処理
+
+GETLOCAL ForEndNum
+GETLOCAL インデックス変数
+SUB
+LOGNOT
+JPEQ0 BeginForLabel

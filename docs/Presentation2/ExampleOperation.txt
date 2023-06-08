@@ -1,0 +1,23 @@
+PUSH 0              // イテレータ
+SETLOCAL i
+POP
+PUSH 1000000        // 反復終了回数
+SETLOCAL ForEndNum
+POP
+BeginForLabel:      // for開始
+PUSH 10
+GETLOCAL i
+MUL                  // 10 * i
+PUSH 100
+ADD                  // + 100
+POP
+GETLOCAL i           // i インクリメント
+PUSH 1
+ADD
+SETLOCAL i           // for 脱出判定
+GETLOCAL ForEndNum
+GETLOCAL i
+SUB
+LOGNOT
+JPEQ0 BeginForLabel
+END
