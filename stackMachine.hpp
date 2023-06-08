@@ -24,6 +24,9 @@ enum OPECODES {
         LABEL,
         JUMP,
         JPEQ0,
+        GT,
+        LT,
+        LOGNOT,
         END,
 };
 
@@ -59,7 +62,10 @@ private:
     void Div();
     void Print();
     void Jump(std::vector<std::string> inst);
-    void Jpeq0(unsigned short label);
+    void Jpeq0(std::vector<std::string> inst);
+    void Gt();
+    void Lt();
+    void LogNot();
 
     // 命令→オペコード・オペランド変換
     const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;

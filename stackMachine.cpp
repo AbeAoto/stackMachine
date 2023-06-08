@@ -18,6 +18,7 @@ void StackMachine::DoInstructions()
         const unsigned int instructionIdx = 0;
         std::string opString = _instructions2[_programCounter][instructionIdx];
 
+        std::cout << "pc : " << _programCounter << " " << opString << std::endl;
         // ラベルの新規登録
         if(opString.back() == ':')
         {
@@ -50,6 +51,10 @@ void StackMachine::DoInstructions()
         case OPECODES::DIV:      Div();  break;
         case OPECODES::PRINT:    Print();  break;
         case OPECODES::JUMP:     Jump(_instructions2[_programCounter]);  break;
+        case OPECODES::JPEQ0:    Jpeq0(_instructions2[_programCounter]);  break;
+        case OPECODES::GT:       Gt();  break;
+        case OPECODES::LT:       Lt();  break;
+        case OPECODES::LOGNOT:   LogNot();  break;
         case OPECODES::END:      return;
         }
         _programCounter++;
@@ -69,15 +74,15 @@ void StackMachine::Pop()
 
 void StackMachine::SetLocal(std::vector<std::string> inst)
 {
-  // テーブルサイズ調整
-  if (_variables[_callStackDepth].size() <= _blockDepth)
-  {
-      _variables[_callStackDepth].resize(_blockDepth+1);
-  }
+    // テーブルサイズ調整
+    if (_variables[_callStackDepth].size() <= _blockDepth)
+    {
+        _variables[_callStackDepth].resize(_blockDepth+1);
+    }
 
-  std::string variableName = inst[1];
-  std::map<std::string, int>* varMap = &_variables[_callStackDepth][_blockDepth];
-  (*varMap)[variableName] = _stack.top();
+    std::string variableName = inst[1];
+    std::map<std::string, int>* varMap = &_variables[_callStackDepth][_blockDepth];
+    (*varMap)[variableName] = _stack.top();
 }
 
 void StackMachine::GetLocal(std::vector<std::string> inst)
@@ -204,21 +209,77 @@ void StackMachine::Jump(std::vector<std::string> inst)
     _programCounter = newPC->second;
 }
 
-// void StackMachine::Jpeq0(unsigned short label)
-// {
-//     if (_stack.size() < 1)
-//     {
-//         exit(1);
-//     }
+void StackMachine::Jpeq0(std::vector<std::string> inst)
+{
+    if (inst.size() <= 1)
+    {
+        std::cerr << "[err] You need to assign jump destination label.   Line : " << _programCounter << std::endl;
+        exit(1);
+    }
 
-//     int stackTop = _stack.top();
-//     _stack.pop();
+    // スタックが空の場合のエラー
+    if (_stack.size() <= 0)
+    {
+        std::cerr << "[err] Stack is empty with operation JPEQ0.   Line : " << _programCounter << std::endl;
+        exit(1);
+    }
 
-//     if (stackTop == 0)
-//     {
-//         Jump(label);
-//     }
-// }
+    bool needToJump = (_stack.top() == 0);
+    _stack.pop();
+
+    if (needToJump)
+    {
+        Jump(inst);
+    }
+}
+
+void StackMachine::Gt()
+{
+    if (_stack.size() <= 1)
+    {
+        std::cerr << "[err] Stack needs at least 2 elements with operation GT.   Line : "
+                  << _programCounter << std::endl;
+        exit(1);
+    }
+
+    int op2 = _stack.top();
+    _stack.pop();
+    int op1 = _stack.top();
+    _stack.pop();
+
+    _stack.push((op2 > op1));
+}
+
+void StackMachine::Lt()
+{
+    if (_stack.size() <= 1)
+    {
+        std::cerr << "[err] Stack needs at least 2 elements with operation LT.   Line : "
+                  << _programCounter << std::endl;
+        exit(1);
+    }
+
+    int op2 = _stack.top();
+    _stack.pop();
+    int op1 = _stack.top();
+    _stack.pop();
+
+    _stack.push((op2 < op1));
+}
+
+void StackMachine::LogNot()
+{
+    // スタックが空の場合のエラー
+    if (_stack.size() <= 0)
+    {
+        std::cerr << "[err] Stack is empty with operation LOGNOT.   Line : " << _programCounter << std::endl;
+        exit(1);
+    }
+
+    bool stackTop = _stack.top();
+    _stack.pop();
+    _stack.push(!stackTop);
+}
 
 const unsigned short StackMachine::GetOpecodeFromInstruction(const unsigned int instruction) const
 {
@@ -253,5 +314,8 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
     else if (instruction == "PRINT")     return OPECODES::PRINT;
     else if (instruction == "JUMP")      return OPECODES::JUMP;
     else if (instruction == "JPEQ0")     return OPECODES::JPEQ0;
+    else if (instruction == "GT")        return OPECODES::GT;
+    else if (instruction == "LT")        return OPECODES::LT;
+    else if (instruction == "LOGNOT")    return OPECODES::LOGNOT;
     else                                 return OPECODES::END;
 }
