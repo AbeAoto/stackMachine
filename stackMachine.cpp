@@ -8,12 +8,34 @@ void StackMachine::DoInstructions()
     _programCounter = 0;
 
     while (true) {
-        if (_instructions2.size() - 1 <= _programCounter || _instructions2.size() == 0)
+        bool readNewLine = ((int)_instructions2.size() - 1 <= (int)_programCounter);
+        // 新規読み込み判定
+        if (readNewLine)
         {
             _instructions2.push_back(_inputMgr->GetLineInstruction());
         }
 
         const unsigned int instructionIdx = 0;
+        std::string opString = _instructions2[_programCounter][instructionIdx];
+        // ラベルの新規登録
+        if(opString.back() == ':')
+        {
+            if (opString.size() - 1 <= 0)
+            {
+                std::cerr << "[err] Label Name is not required.   Line : " << _programCounter <<  std::endl;
+                exit(1);
+            }
+
+            if (readNewLine)
+            {
+                opString.pop_back();
+                _labels[opString] = _programCounter + 1;
+            }
+
+            _programCounter++;
+            continue;
+        }
+
         OPECODES op = StringToOpecodes(_instructions2[_programCounter][instructionIdx]);
         switch (op)
         {
@@ -81,11 +103,11 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
   exit(1);
 }
 
-void StackMachine::Call(const unsigned short func)
-{
-    _callStack.push(_programCounter);
-    Jump(func);
-}
+// void StackMachine::Call(const unsigned short func)
+// {
+//     _callStack.push(_programCounter);
+//     Jump(func);
+// }
 
 void StackMachine::Add()
 {
@@ -160,27 +182,27 @@ void StackMachine::Print()
     std::cout << _stack.top() << std::endl;
 }
 
-void StackMachine::Jump(unsigned short label)
-{
-    const unsigned short address = GetLabeledAddress(label);
-    _programCounter = address;
-}
+// void StackMachine::Jump(unsigned short label)
+// {
+//     const unsigned short address = GetLabeledAddress(label);
+//     _programCounter = address;
+// }
 
-void StackMachine::Jpeq0(unsigned short label)
-{
-    if (_stack.size() < 1)
-    {
-        exit(1);
-    }
+// void StackMachine::Jpeq0(unsigned short label)
+// {
+//     if (_stack.size() < 1)
+//     {
+//         exit(1);
+//     }
 
-    int stackTop = _stack.top();
-    _stack.pop();
+//     int stackTop = _stack.top();
+//     _stack.pop();
 
-    if (stackTop == 0)
-    {
-        Jump(label);
-    }
-}
+//     if (stackTop == 0)
+//     {
+//         Jump(label);
+//     }
+// }
 
 const unsigned short StackMachine::GetOpecodeFromInstruction(const unsigned int instruction) const
 {
@@ -192,30 +214,30 @@ const short StackMachine::GetOperandFromInstruction(const unsigned int instructi
     return instruction & ((1 << _operandBytes) - 1);
 }
 
-const bool StackMachine::IsLabelsContain(const unsigned short label) const
-{
-    // すべてのbitが立っている(つまりUSHRT_MAX)だと未定義
-    return (_labels[label] == USHRT_MAX) ? false : true;
-}
+// const bool StackMachine::IsLabelsContain(const unsigned short label) const
+// {
+//     // すべてのbitが立っている(つまりUSHRT_MAX)だと未定義
+//     return (_labels[label] == USHRT_MAX) ? false : true;
+// }
 
-const unsigned short StackMachine::GetLabeledAddress(const unsigned short label) const
-{
-    return (_labels[label] & ((1 << _labelAddressBytes) - 1));
-}
+// const unsigned short StackMachine::GetLabeledAddress(const unsigned short label) const
+// {
+//     return (_labels[label] & ((1 << _labelAddressBytes) - 1));
+// }
 
-void StackMachine::JampAddressValidCheck() const
-{
-    for (int i = 0; i < _instructions.size(); i++)
-    {
-        const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(_instructions[i]));
-        const unsigned short label = GetOperandFromInstruction(_instructions[i]);
-        if ((opecode == OPECODES::JUMP || opecode == OPECODES::JPEQ0) && !IsLabelsContain(label))
-        {
-            std::cerr << "JUMP operand label is not valid. : [" << i << "] JUMP " << label << std::endl;
-            exit(1);
-        }
-    }
-}
+// void StackMachine::JampAddressValidCheck() const
+// {
+//     for (int i = 0; i < _instructions.size(); i++)
+//     {
+//         const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(_instructions[i]));
+//         const unsigned short label = GetOperandFromInstruction(_instructions[i]);
+//         if ((opecode == OPECODES::JUMP || opecode == OPECODES::JPEQ0) && !IsLabelsContain(label))
+//         {
+//             std::cerr << "JUMP operand label is not valid. : [" << i << "] JUMP " << label << std::endl;
+//             exit(1);
+//         }
+//     }
+// }
 
 unsigned short StackMachine::stringToHash(const std::string& str)
 {

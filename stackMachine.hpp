@@ -33,13 +33,8 @@ public:
     // コンストラクタ・デストラクタ
   StackMachine(std::string fileName) : _programCounter(0), _callStackDepth(1), _blockDepth(0)
     {
-        _variables.reserve(USHRT_MAX+1);
-        _labels.reserve(USHRT_MAX+1);
-        for (int i = 0; i < USHRT_MAX+1; i++) {
-            _labels[i] = USHRT_MAX;
-        }
         _variables.resize(2);
-        std::cout << fileName << std::endl;
+
         _inputMgr = new InputMgr(fileName);
     };
     ~StackMachine(){  delete _inputMgr; };
@@ -85,7 +80,7 @@ private:
     // アーキテクチャ関連
     std::vector<std::vector<std::string>> _instructions2;
     std::vector<unsigned int> _instructions;     /// 命令列
-    std::vector<unsigned short> _labels;         /// ラベルとそのアドレスが入っている
+    std::map<std::string, unsigned int> _labels;         /// ラベルとそのアドレスが入っている
     std::vector<std::vector<std::map<std::string, int>>> _variables;
     std::stack<int> _stack;                      /// スタック
     std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
