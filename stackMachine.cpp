@@ -18,7 +18,6 @@ void StackMachine::DoInstructions()
         const unsigned int instructionIdx = 0;
         std::string opString = _instructions2[_programCounter][instructionIdx];
 
-        std::cout << "pc : " << _programCounter << " " << opString << std::endl;
         // ラベルの新規登録
         if(opString.back() == ':')
         {
