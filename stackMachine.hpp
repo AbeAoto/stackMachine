@@ -58,19 +58,12 @@ private:
     void Mul();
     void Div();
     void Print();
-    void Jump(unsigned short label);
+    void Jump(std::vector<std::string> inst);
     void Jpeq0(unsigned short label);
 
     // 命令→オペコード・オペランド変換
     const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;
     const short GetOperandFromInstruction(const unsigned int instruction) const;
-
-    // ラベル判定
-    const bool IsLabelsContain(const unsigned short label) const;
-    const unsigned short GetLabeledAddress(const unsigned short label) const;
-
-    // ジャンプ判定
-    void JampAddressValidCheck() const;
 
     // ハッシュ関連(ラベル・変数)
     unsigned short stringToHash(const std::string& str);

@@ -17,6 +17,7 @@ void StackMachine::DoInstructions()
 
         const unsigned int instructionIdx = 0;
         std::string opString = _instructions2[_programCounter][instructionIdx];
+
         // ラベルの新規登録
         if(opString.back() == ':')
         {
@@ -29,7 +30,7 @@ void StackMachine::DoInstructions()
             if (readNewLine)
             {
                 opString.pop_back();
-                _labels[opString] = _programCounter + 1;
+                _labels[opString] = _programCounter;
             }
 
             _programCounter++;
@@ -48,6 +49,7 @@ void StackMachine::DoInstructions()
         case OPECODES::MUL:      Mul();  break;
         case OPECODES::DIV:      Div();  break;
         case OPECODES::PRINT:    Print();  break;
+        case OPECODES::JUMP:     Jump(_instructions2[_programCounter]);  break;
         case OPECODES::END:      return;
         }
         _programCounter++;
@@ -182,11 +184,25 @@ void StackMachine::Print()
     std::cout << _stack.top() << std::endl;
 }
 
-// void StackMachine::Jump(unsigned short label)
-// {
-//     const unsigned short address = GetLabeledAddress(label);
-//     _programCounter = address;
-// }
+void StackMachine::Jump(std::vector<std::string> inst)
+{
+    if (inst.size() <= 1)
+    {
+        std::cerr << "[err] You need to assign jump destination label.   Line : " << _programCounter << std::endl;
+        exit(1);
+    }
+
+    auto newPC = _labels.find(inst[1]);
+
+    // ラベルが登録されていなかった場合のエラー
+    if (newPC == _labels.end())
+    {
+        std::cerr << "[err] Label " << inst[1] << " is not declared.   Line : " << _programCounter << std::endl;
+        exit(1);
+    }
+
+    _programCounter = newPC->second;
+}
 
 // void StackMachine::Jpeq0(unsigned short label)
 // {
@@ -213,31 +229,6 @@ const short StackMachine::GetOperandFromInstruction(const unsigned int instructi
 {
     return instruction & ((1 << _operandBytes) - 1);
 }
-
-// const bool StackMachine::IsLabelsContain(const unsigned short label) const
-// {
-//     // すべてのbitが立っている(つまりUSHRT_MAX)だと未定義
-//     return (_labels[label] == USHRT_MAX) ? false : true;
-// }
-
-// const unsigned short StackMachine::GetLabeledAddress(const unsigned short label) const
-// {
-//     return (_labels[label] & ((1 << _labelAddressBytes) - 1));
-// }
-
-// void StackMachine::JampAddressValidCheck() const
-// {
-//     for (int i = 0; i < _instructions.size(); i++)
-//     {
-//         const OPECODES opecode = static_cast<OPECODES>(GetOpecodeFromInstruction(_instructions[i]));
-//         const unsigned short label = GetOperandFromInstruction(_instructions[i]);
-//         if ((opecode == OPECODES::JUMP || opecode == OPECODES::JPEQ0) && !IsLabelsContain(label))
-//         {
-//             std::cerr << "JUMP operand label is not valid. : [" << i << "] JUMP " << label << std::endl;
-//             exit(1);
-//         }
-//     }
-// }
 
 unsigned short StackMachine::stringToHash(const std::string& str)
 {
