@@ -30,7 +30,7 @@ void StackMachine::DoInstructions()
             if (readNewLine)
             {
                 opString.pop_back();
-                _labels[opString] = _resources->GetProgramCounter();
+                _resources->SetLabel(opString, _resources->GetProgramCounter());
             }
 
             _resources->IncrementProgramCounter();
@@ -196,16 +196,7 @@ void StackMachine::Jump(std::vector<std::string> inst)
         exit(1);
     }
 
-    auto newPC = _labels.find(inst[1]);
-
-    // ラベルが登録されていなかった場合のエラー
-    if (newPC == _labels.end())
-    {
-        std::cerr << "[err] Label " << inst[1] << " is not declared.   Line : " << _resources->GetProgramCounter() << std::endl;
-        exit(1);
-    }
-
-    _resources->SetProgramCounter(newPC->second);
+    _resources->SetProgramCounter(_resources->GetLabeledAddress(inst[1]));
 }
 
 void StackMachine::Jpeq0(std::vector<std::string> inst)
@@ -335,7 +326,7 @@ void StackMachineResources::SetProgramCounter(const unsigned int num)
   _programCounter = num;
 }
 
-int StackMachineResources::GetProgramCounter()
+unsigned int StackMachineResources::GetProgramCounter() const
 {
   return _programCounter;
 }
@@ -343,4 +334,24 @@ int StackMachineResources::GetProgramCounter()
 void StackMachineResources::IncrementProgramCounter()
 {
   _programCounter++;
+}
+
+unsigned int StackMachineResources::GetLabeledAddress(const std::string labelName) const
+{
+  auto newPC = _labels.find(labelName);
+
+  // ラベルが登録されていなかった場合のエラー
+  if (newPC == _labels.end())
+  {
+    std::cerr << "[err] Label " << labelName << " is not declared.   Line : "
+              << GetProgramCounter() << std::endl;
+    exit(1);
+  }
+
+  return newPC->second;
+}
+
+void StackMachineResources::SetLabel(const std::string labelName, const unsigned int address)
+{
+  _labels[labelName] = address;
 }

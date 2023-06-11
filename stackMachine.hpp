@@ -65,11 +65,17 @@ public:
   // singleton用インスタンス取得関数
   static StackMachineResources* GetInstance();
 
+  // プログラムカウンタ関連
   void IncrementProgramCounter();
   void SetProgramCounter(const unsigned int num);
-  int GetProgramCounter();
+  unsigned int GetProgramCounter() const;
+
+  // ラベル関連
+  unsigned int GetLabeledAddress(const std::string labelName) const;
+  void SetLabel(const std::string labelName, const unsigned int address);
 private:
-  int _programCounter;
+  unsigned int _programCounter;
+  std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
 };
 
 class StackMachine
@@ -121,7 +127,6 @@ private:
 
     // アーキテクチャ関連
     std::vector<std::vector<std::string>> _instructions;
-    std::map<std::string, unsigned int> _labels;         /// ラベルとそのアドレスが入っている
     std::vector<std::vector<std::map<std::string, int>>> _variables;
     std::stack<int> _stack;                      /// スタック
     std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
