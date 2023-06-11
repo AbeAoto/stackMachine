@@ -30,15 +30,32 @@ enum OPECODES {
         END,
 };
 
+class StackMachine;
+class StackMachineResources;
+
+
+class StackMachineResources
+{
+public:
+  StackMachineResources() : _programCounter(0) {};
+
+  void IncrementProgramCounter();
+  void SetProgramCounter(const unsigned int num);
+  int GetProgramCounter();
+private:
+  int _programCounter;
+};
+
 class StackMachine
 {
 public:
     // コンストラクタ・デストラクタ
-  StackMachine(std::string fileName) : _programCounter(0), _callStackDepth(1), _blockDepth(0)
+  StackMachine(std::string fileName) : _callStackDepth(1), _blockDepth(0)
     {
         _variables.resize(2);
 
         _inputMgr = new InputMgr(fileName);
+        _resources = new StackMachineResources();
     };
     ~StackMachine(){  delete _inputMgr; };
 
@@ -83,7 +100,6 @@ private:
     std::vector<std::vector<std::map<std::string, int>>> _variables;
     std::stack<int> _stack;                      /// スタック
     std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
-    unsigned int _programCounter;
     unsigned int _blockDepth;
     unsigned int _callStackDepth;
 
@@ -96,4 +112,7 @@ private:
 
     // 補助クラス
     InputMgr* _inputMgr;
+  StackMachineResources* _resources;
 };
+
+

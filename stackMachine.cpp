@@ -5,10 +5,10 @@
 
 void StackMachine::DoInstructions()
 {
-    _programCounter = 0;
+    _resources->SetProgramCounter(0);
 
     while (true) {
-        bool readNewLine = ((int)_instructions2.size() - 1 <= (int)_programCounter);
+      bool readNewLine = ((int)_instructions2.size() - 1 <= (int)_resources->GetProgramCounter());
         // 新規読み込み判定
         if (readNewLine)
         {
@@ -16,47 +16,47 @@ void StackMachine::DoInstructions()
         }
 
         const unsigned int instructionIdx = 0;
-        std::string opString = _instructions2[_programCounter][instructionIdx];
+        std::string opString = _instructions2[_resources->GetProgramCounter()][instructionIdx];
 
         // ラベルの新規登録
         if(opString.back() == ':')
         {
             if (opString.size() - 1 <= 0)
             {
-                std::cerr << "[err] Label Name is not required.   Line : " << _programCounter <<  std::endl;
+                std::cerr << "[err] Label Name is not required.   Line : " << _resources->GetProgramCounter() <<  std::endl;
                 exit(1);
             }
 
             if (readNewLine)
             {
                 opString.pop_back();
-                _labels[opString] = _programCounter;
+                _labels[opString] = _resources->GetProgramCounter();
             }
 
-            _programCounter++;
+            _resources->IncrementProgramCounter();
             continue;
         }
 
-        OPECODES op = StringToOpecodes(_instructions2[_programCounter][instructionIdx]);
+        OPECODES op = StringToOpecodes(_instructions2[_resources->GetProgramCounter()][instructionIdx]);
         switch (op)
         {
-        case OPECODES::PUSH:     Push(_instructions2[_programCounter]);  break;
+        case OPECODES::PUSH:     Push(_instructions2[_resources->GetProgramCounter()]);  break;
         case OPECODES::POP:      Pop();  break;
-        case OPECODES::SETLOCAL: SetLocal(_instructions2[_programCounter]);  break;
-        case OPECODES::GETLOCAL: GetLocal(_instructions2[_programCounter]);  break;
+        case OPECODES::SETLOCAL: SetLocal(_instructions2[_resources->GetProgramCounter()]);  break;
+        case OPECODES::GETLOCAL: GetLocal(_instructions2[_resources->GetProgramCounter()]);  break;
         case OPECODES::ADD:      Add();  break;
         case OPECODES::SUB:      Sub();  break;
         case OPECODES::MUL:      Mul();  break;
         case OPECODES::DIV:      Div();  break;
         case OPECODES::PRINT:    Print();  break;
-        case OPECODES::JUMP:     Jump(_instructions2[_programCounter]);  break;
-        case OPECODES::JPEQ0:    Jpeq0(_instructions2[_programCounter]);  break;
+        case OPECODES::JUMP:     Jump(_instructions2[_resources->GetProgramCounter()]);  break;
+        case OPECODES::JPEQ0:    Jpeq0(_instructions2[_resources->GetProgramCounter()]);  break;
         case OPECODES::GT:       Gt();  break;
         case OPECODES::LT:       Lt();  break;
         case OPECODES::LOGNOT:   LogNot();  break;
         case OPECODES::END:      return;
         }
-        _programCounter++;
+        _resources->IncrementProgramCounter();
     }
 }
 
@@ -105,13 +105,13 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
   }
 
   std::cerr << "[err] variable \"" << variableName
-            << "\" is not declared.   Line : " << _programCounter <<  std::endl;
+            << "\" is not declared.   Line : " << _resources->GetProgramCounter() <<  std::endl;
   exit(1);
 }
 
 // void StackMachine::Call(const unsigned short func)
 // {
-//     _callStack.push(_programCounter);
+//     _callStack.push(_resources->GetProgramCounter());
 //     Jump(func);
 // }
 
@@ -192,7 +192,7 @@ void StackMachine::Jump(std::vector<std::string> inst)
 {
     if (inst.size() <= 1)
     {
-        std::cerr << "[err] You need to assign jump destination label.   Line : " << _programCounter << std::endl;
+        std::cerr << "[err] You need to assign jump destination label.   Line : " << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
@@ -201,25 +201,25 @@ void StackMachine::Jump(std::vector<std::string> inst)
     // ラベルが登録されていなかった場合のエラー
     if (newPC == _labels.end())
     {
-        std::cerr << "[err] Label " << inst[1] << " is not declared.   Line : " << _programCounter << std::endl;
+        std::cerr << "[err] Label " << inst[1] << " is not declared.   Line : " << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
-    _programCounter = newPC->second;
+    _resources->SetProgramCounter(newPC->second);
 }
 
 void StackMachine::Jpeq0(std::vector<std::string> inst)
 {
     if (inst.size() <= 1)
     {
-        std::cerr << "[err] You need to assign jump destination label.   Line : " << _programCounter << std::endl;
+        std::cerr << "[err] You need to assign jump destination label.   Line : " << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
     // スタックが空の場合のエラー
     if (_stack.size() <= 0)
     {
-        std::cerr << "[err] Stack is empty with operation JPEQ0.   Line : " << _programCounter << std::endl;
+        std::cerr << "[err] Stack is empty with operation JPEQ0.   Line : " << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
@@ -237,7 +237,7 @@ void StackMachine::Gt()
     if (_stack.size() <= 1)
     {
         std::cerr << "[err] Stack needs at least 2 elements with operation GT.   Line : "
-                  << _programCounter << std::endl;
+                  << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
@@ -254,7 +254,7 @@ void StackMachine::Lt()
     if (_stack.size() <= 1)
     {
         std::cerr << "[err] Stack needs at least 2 elements with operation LT.   Line : "
-                  << _programCounter << std::endl;
+                  << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
@@ -271,7 +271,7 @@ void StackMachine::LogNot()
     // スタックが空の場合のエラー
     if (_stack.size() <= 0)
     {
-        std::cerr << "[err] Stack is empty with operation LOGNOT.   Line : " << _programCounter << std::endl;
+        std::cerr << "[err] Stack is empty with operation LOGNOT.   Line : " << _resources->GetProgramCounter() << std::endl;
         exit(1);
     }
 
@@ -317,4 +317,19 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
     else if (instruction == "LT")        return OPECODES::LT;
     else if (instruction == "LOGNOT")    return OPECODES::LOGNOT;
     else                                 return OPECODES::END;
+}
+
+void StackMachineResources::SetProgramCounter(const unsigned int num)
+{
+  _programCounter = num;
+}
+
+int StackMachineResources::GetProgramCounter()
+{
+  return _programCounter;
+}
+
+void StackMachineResources::IncrementProgramCounter()
+{
+  _programCounter++;
 }
