@@ -319,6 +319,17 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
     else                                 return OPECODES::END;
 }
 
+StackMachineResources* StackMachineResources::_singleton = NULL;
+
+StackMachineResources* StackMachineResources::GetInstance()
+{
+  if (_singleton == NULL)
+  {
+    _singleton = new StackMachineResources();
+  }
+  return _singleton;
+}
+
 void StackMachineResources::SetProgramCounter(const unsigned int num)
 {
   _programCounter = num;

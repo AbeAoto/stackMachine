@@ -36,8 +36,34 @@ class StackMachineResources;
 
 class StackMachineResources
 {
-public:
+private:
+  static StackMachineResources* _singleton;
+
+  // コンストラクタ
   StackMachineResources() : _programCounter(0) {};
+
+  // コピーコンストラクタ
+  StackMachineResources(const StackMachineResources& src)
+  {
+    _singleton = src._singleton;
+  };
+
+  // 代入演算子
+  StackMachineResources& operator=(const StackMachineResources& src)
+  {
+    _singleton = src._singleton;
+    return *this;
+  }
+
+public:
+  // デストラクタ
+  virtual ~StackMachineResources()
+  {
+    delete _singleton;
+  }
+
+  // singleton用インスタンス取得関数
+  static StackMachineResources* GetInstance();
 
   void IncrementProgramCounter();
   void SetProgramCounter(const unsigned int num);
@@ -55,7 +81,7 @@ public:
         _variables.resize(2);
 
         _inputMgr = new InputMgr(fileName);
-        _resources = new StackMachineResources();
+        _resources = StackMachineResources::GetInstance();
     };
     ~StackMachine(){  delete _inputMgr; };
 
