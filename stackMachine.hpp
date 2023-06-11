@@ -94,8 +94,7 @@ private:
     OPECODES StringToOpecodes(std::string instruction);
 
     // アーキテクチャ関連
-    std::vector<std::vector<std::string>> _instructions2;
-    std::vector<unsigned int> _instructions;     /// 命令列
+    std::vector<std::vector<std::string>> _instructions;
     std::map<std::string, unsigned int> _labels;         /// ラベルとそのアドレスが入っている
     std::vector<std::vector<std::map<std::string, int>>> _variables;
     std::stack<int> _stack;                      /// スタック

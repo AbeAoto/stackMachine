@@ -8,15 +8,15 @@ void StackMachine::DoInstructions()
     _resources->SetProgramCounter(0);
 
     while (true) {
-      bool readNewLine = ((int)_instructions2.size() - 1 <= (int)_resources->GetProgramCounter());
+      bool readNewLine = ((int)_instructions.size() - 1 <= (int)_resources->GetProgramCounter());
         // 新規読み込み判定
         if (readNewLine)
         {
-            _instructions2.push_back(_inputMgr->GetLineInstruction());
+            _instructions.push_back(_inputMgr->GetLineInstruction());
         }
 
         const unsigned int instructionIdx = 0;
-        std::string opString = _instructions2[_resources->GetProgramCounter()][instructionIdx];
+        std::string opString = _instructions[_resources->GetProgramCounter()][instructionIdx];
 
         // ラベルの新規登録
         if(opString.back() == ':')
@@ -37,20 +37,20 @@ void StackMachine::DoInstructions()
             continue;
         }
 
-        OPECODES op = StringToOpecodes(_instructions2[_resources->GetProgramCounter()][instructionIdx]);
+        OPECODES op = StringToOpecodes(_instructions[_resources->GetProgramCounter()][instructionIdx]);
         switch (op)
         {
-        case OPECODES::PUSH:     Push(_instructions2[_resources->GetProgramCounter()]);  break;
+        case OPECODES::PUSH:     Push(_instructions[_resources->GetProgramCounter()]);  break;
         case OPECODES::POP:      Pop();  break;
-        case OPECODES::SETLOCAL: SetLocal(_instructions2[_resources->GetProgramCounter()]);  break;
-        case OPECODES::GETLOCAL: GetLocal(_instructions2[_resources->GetProgramCounter()]);  break;
+        case OPECODES::SETLOCAL: SetLocal(_instructions[_resources->GetProgramCounter()]);  break;
+        case OPECODES::GETLOCAL: GetLocal(_instructions[_resources->GetProgramCounter()]);  break;
         case OPECODES::ADD:      Add();  break;
         case OPECODES::SUB:      Sub();  break;
         case OPECODES::MUL:      Mul();  break;
         case OPECODES::DIV:      Div();  break;
         case OPECODES::PRINT:    Print();  break;
-        case OPECODES::JUMP:     Jump(_instructions2[_resources->GetProgramCounter()]);  break;
-        case OPECODES::JPEQ0:    Jpeq0(_instructions2[_resources->GetProgramCounter()]);  break;
+        case OPECODES::JUMP:     Jump(_instructions[_resources->GetProgramCounter()]);  break;
+        case OPECODES::JPEQ0:    Jpeq0(_instructions[_resources->GetProgramCounter()]);  break;
         case OPECODES::GT:       Gt();  break;
         case OPECODES::LT:       Lt();  break;
         case OPECODES::LOGNOT:   LogNot();  break;
