@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <iostream>
 #include "InputMgr.hpp"
+#include "Resources.hpp"
 
 #pragma once
 
@@ -30,54 +31,6 @@ enum OPECODES {
   END,
 };
 
-class StackMachine;
-class StackMachineResources;
-
-
-class StackMachineResources
-{
-private:
-  static StackMachineResources* _singleton;
-
-  // コンストラクタ
-  StackMachineResources() : _programCounter(0) {};
-
-  // コピーコンストラクタ
-  StackMachineResources(const StackMachineResources& src)
-  {
-    _singleton = src._singleton;
-  };
-
-  // 代入演算子
-  StackMachineResources& operator=(const StackMachineResources& src)
-  {
-    _singleton = src._singleton;
-    return *this;
-  }
-
-public:
-  // デストラクタ
-  virtual ~StackMachineResources()
-  {
-    delete _singleton;
-  }
-
-  // singleton用インスタンス取得関数
-  static StackMachineResources* GetInstance();
-
-  // プログラムカウンタ関連
-  void IncrementProgramCounter();
-  void SetProgramCounter(const unsigned int num);
-  unsigned int GetProgramCounter() const;
-
-  // ラベル関連
-  unsigned int GetLabeledAddress(const std::string labelName) const;
-  void SetLabel(const std::string labelName, const unsigned int address);
-private:
-  unsigned int _programCounter;
-  std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
-};
-
 class StackMachine
 {
 public:
@@ -87,7 +40,7 @@ public:
     _variables.resize(2);
 
     _inputMgr = new InputMgr(fileName);
-    _resources = StackMachineResources::GetInstance();
+    _resources = Resources::GetInstance();
   };
   ~StackMachine(){  delete _inputMgr; };
 
@@ -142,7 +95,7 @@ private:
 
   // 補助クラス
   InputMgr* _inputMgr;
-  StackMachineResources* _resources;
+  Resources* _resources;
 };
 
 
