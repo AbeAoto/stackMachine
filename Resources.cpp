@@ -56,7 +56,7 @@ void Resources::DecreaseBlockDepth()
 {
   if (_blockDepth == 0)
   {
-    std::cerr << "[sys][err] Block depth must be 0 or more."
+    std::cerr << "[fatal][err] Block depth must be 0 or more."
               << "Report it to the programmer." << std::endl;
   }
 
@@ -66,4 +66,25 @@ void Resources::DecreaseBlockDepth()
 const unsigned int Resources::GetBlockDepth() const
 {
   return _blockDepth;
+}
+
+void Resources::IncreaseCallStackDepth()
+{
+  _callStackDepth++;
+}
+
+void Resources::DecreaseCallStackDepth()
+{
+  if (_callStackDepth == 0)
+  {
+    std::cerr << "[fatal][err] Call stack depth must be 0 or more."
+              << "Report it to the programmer." << std::endl;
+  }
+
+  _callStackDepth--;
+}
+
+const unsigned int Resources::GetCallStackDepth() const
+{
+  return _callStackDepth;
 }

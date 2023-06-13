@@ -74,13 +74,13 @@ void StackMachine::Pop()
 void StackMachine::SetLocal(std::vector<std::string> inst)
 {
   // テーブルサイズ調整
-  if (_variables[_callStackDepth].size() <= _resources->GetBlockDepth())
+  if (_variables[_resources->GetCallStackDepth()].size() <= _resources->GetBlockDepth())
   {
-    _variables[_callStackDepth].resize(_resources->GetBlockDepth()+1);
+    _variables[_resources->GetCallStackDepth()].resize(_resources->GetBlockDepth()+1);
   }
 
   std::string variableName = inst[1];
-  std::map<std::string, int>* varMap = &_variables[_callStackDepth][_resources->GetBlockDepth()];
+  std::map<std::string, int>* varMap = &_variables[_resources->GetCallStackDepth()][_resources->GetBlockDepth()];
   (*varMap)[variableName] = _stack.top();
 }
 
@@ -90,14 +90,14 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
   for (int blockDepth = _resources->GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
 
     // その階層で変数が宣言されていない場合スキップ
-    if (_variables[_callStackDepth].size() <= blockDepth)
+    if (_variables[_resources->GetCallStackDepth()].size() <= blockDepth)
       continue;
 
-    std::map<std::string, int> varMap = _variables[_callStackDepth][blockDepth];
-    auto varInfo = _variables[_callStackDepth][blockDepth].find(variableName);
+    std::map<std::string, int> varMap = _variables[_resources->GetCallStackDepth()][blockDepth];
+    auto varInfo = _variables[_resources->GetCallStackDepth()][blockDepth].find(variableName);
 
     // 要素が存在していた場合
-    if (varInfo != _variables[_callStackDepth][blockDepth].end())
+    if (varInfo != _variables[_resources->GetCallStackDepth()][blockDepth].end())
     {
       _stack.push(varInfo->second);
       return;

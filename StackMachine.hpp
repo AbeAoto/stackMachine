@@ -35,7 +35,7 @@ class StackMachine
 {
 public:
   // コンストラクタ・デストラクタ
-  StackMachine(std::string fileName) : _callStackDepth(1)
+  StackMachine(std::string fileName)
   {
     _variables.resize(2);
 
@@ -83,8 +83,6 @@ private:
   std::vector<std::vector<std::map<std::string, int>>> _variables;
   std::stack<int> _stack;                      /// スタック
   std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
-  
-  unsigned int _callStackDepth;
 
   // 定数関連
   const unsigned short _opecodeBytes = 16;

@@ -50,9 +50,16 @@ public:
   void IncreaseBlockDepth();
   void DecreaseBlockDepth();
   const unsigned int GetBlockDepth() const;
+
+  void IncreaseCallStackDepth();
+  void DecreaseCallStackDepth();
+  const unsigned int GetCallStackDepth() const;
+
 // リソース宣言
 private:
   unsigned int _programCounter;
   unsigned int _blockDepth;
+  unsigned int _callStackDepth;
+
   std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
 };
