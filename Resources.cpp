@@ -49,7 +49,7 @@ void Resources::SetProgramCounter(const unsigned int num)
   _programCounter = num;
 }
 
-unsigned int Resources::GetProgramCounter() const
+const unsigned int Resources::GetProgramCounter() const
 {
   return _programCounter;
 }
@@ -119,4 +119,24 @@ void Resources::DecreaseCallStackDepth()
 const unsigned int Resources::GetCallStackDepth() const
 {
   return _callStackDepth;
+}
+
+void Resources::PushStack(const int ele)
+{
+  _stack.push(ele);
+}
+
+void Resources::PopStack()
+{
+  _stack.pop();
+}
+
+const int Resources::TopStack() const
+{
+  return _stack.top();
+}
+
+const unsigned int Resources::GetStackSize() const
+{
+  return _stack.size();
 }

@@ -64,12 +64,12 @@ void StackMachine::DoInstructions()
 void StackMachine::Push(std::vector<std::string> inst)
 {
   int num = std::stoi(inst[1]);
-  _stack.push(num);
+  _resources->PushStack(num);
 }
 
 void StackMachine::Pop()
 {
-  _stack.pop();
+  _resources->PopStack();
 }
 
 void StackMachine::SetLocal(std::vector<std::string> inst)
@@ -82,7 +82,7 @@ void StackMachine::SetLocal(std::vector<std::string> inst)
 
   std::string variableName = inst[1];
   std::map<std::string, int>* varMap = &_variables[_resources->GetCallStackDepth()][_resources->GetBlockDepth()];
-  (*varMap)[variableName] = _stack.top();
+  (*varMap)[variableName] = _resources->TopStack();
 }
 
 void StackMachine::GetLocal(std::vector<std::string> inst)
@@ -100,7 +100,7 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
     // 要素が存在していた場合
     if (varInfo != _variables[_resources->GetCallStackDepth()][blockDepth].end())
     {
-      _stack.push(varInfo->second);
+      _resources->PushStack(varInfo->second);
       return;
     }
   }
@@ -118,62 +118,66 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
 
 void StackMachine::Add()
 {
-  // もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2)
+  if (_resources->GetStackSize() < 2)
   {
+    std::cerr << "[err]Add operation needs 2 or more stack elements.  Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  int op1 = _stack.top();
-  _stack.pop();
-  int op2 = _stack.top();
-  _stack.pop();
-  _stack.push(op1 + op2);
+  int op1 = _resources->TopStack();
+  _resources->PopStack();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+  _resources->PushStack(op1 + op2);
 }
 
 void StackMachine::Sub()
 {
-  // もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2)
+  if (_resources->GetStackSize() < 2)
   {
+    std::cerr << "[err]Sub operation needs 2 or more stack elements.  Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  int op1 = _stack.top();
-  _stack.pop();
-  int op2 = _stack.top();
-  _stack.pop();
-  _stack.push(op1 - op2);
+  int op1 = _resources->TopStack();
+  _resources->PopStack();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+  _resources->PushStack(op1 - op2);
 }
 
 void StackMachine::Mul()
 {
-  // もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2)
+  if (_resources->GetStackSize() < 2)
   {
+    std::cerr << "[err]Mul operation needs 2 or more stack elements.  Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  int op1 = _stack.top();
-  _stack.pop();
-  int op2 = _stack.top();
-  _stack.pop();
-  _stack.push(op1 * op2);
+  int op1 = _resources->TopStack();
+  _resources->PopStack();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+  _resources->PushStack(op1 * op2);
 }
 
 void StackMachine::Div()
 {
-  // もうちょっとちゃんとした例外投げた方がいい
-  if (_stack.size() < 2)
+  if (_resources->GetStackSize() < 2)
   {
+    std::cerr << "[err]Div operation needs 2 or more stack elements.  Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
   // (先/後)の順にしたいのでオペランド取得順が逆になっている
-  int op2 = _stack.top();
-  _stack.pop();
-  int op1 = _stack.top();
-  _stack.pop();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+  int op1 = _resources->TopStack();
+  _resources->PopStack();
 
   if (op2 == 0)
   {
@@ -181,19 +185,20 @@ void StackMachine::Div()
     exit(1);
   }
 
-  _stack.push(op1 / op2);
+  _resources->PushStack(op1 / op2);
 }
 
 void StackMachine::Print()
 {
-  std::cout << _stack.top() << std::endl;
+  std::cout << _resources->TopStack() << std::endl;
 }
 
 void StackMachine::Jump(std::vector<std::string> inst)
 {
   if (inst.size() <= 1)
   {
-    std::cerr << "[err] You need to assign jump destination label.   Line : " << _resources->GetProgramCounter() << std::endl;
+    std::cerr << "[err] You need to assign jump destination label.   Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
@@ -209,14 +214,15 @@ void StackMachine::Jpeq0(std::vector<std::string> inst)
   }
 
   // スタックが空の場合のエラー
-  if (_stack.size() <= 0)
+  if (_resources->GetStackSize() <= 0)
   {
-    std::cerr << "[err] Stack is empty with operation JPEQ0.   Line : " << _resources->GetProgramCounter() << std::endl;
+    std::cerr << "[err] Stack is empty with operation JPEQ0.   Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  bool needToJump = (_stack.top() == 0);
-  _stack.pop();
+  bool needToJump = (_resources->TopStack() == 0);
+  _resources->PopStack();
 
   if (needToJump)
   {
@@ -226,50 +232,49 @@ void StackMachine::Jpeq0(std::vector<std::string> inst)
 
 void StackMachine::Gt()
 {
-  if (_stack.size() <= 1)
+  if (_resources->GetStackSize() <= 1)
   {
     std::cerr << "[err] Stack needs at least 2 elements with operation GT.   Line : "
               << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  int op2 = _stack.top();
-  _stack.pop();
-  int op1 = _stack.top();
-  _stack.pop();
-
-  _stack.push((op2 > op1));
+  int op1 = _resources->TopStack();
+  _resources->PopStack();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+  _resources->PushStack(op1 > op2);
 }
 
 void StackMachine::Lt()
 {
-  if (_stack.size() <= 1)
+  if (_resources->GetStackSize() <= 1)
   {
     std::cerr << "[err] Stack needs at least 2 elements with operation LT.   Line : "
               << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  int op2 = _stack.top();
-  _stack.pop();
-  int op1 = _stack.top();
-  _stack.pop();
-
-  _stack.push((op2 < op1));
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+  int op1 = _resources->TopStack();
+  _resources->PopStack();
+  _resources->PushStack(op1 < op2);
 }
 
 void StackMachine::LogNot()
 {
   // スタックが空の場合のエラー
-  if (_stack.size() <= 0)
+  if (_resources->GetStackSize() <= 0)
   {
-    std::cerr << "[err] Stack is empty with operation LOGNOT.   Line : " << _resources->GetProgramCounter() << std::endl;
+    std::cerr << "[err] Stack is empty with operation LOGNOT.   Line : "
+              << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
 
-  bool stackTop = _stack.top();
-  _stack.pop();
-  _stack.push(!stackTop);
+  bool stackTop = _resources->TopStack();
+  _resources->PopStack();
+  _resources->PushStack(!stackTop);
 }
 
 OPECODES StackMachine::StringToOpecodes(std::string instruction)

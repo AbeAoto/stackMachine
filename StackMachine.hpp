@@ -74,7 +74,6 @@ private:
 
   // アーキテクチャ関連
   std::vector<std::vector<std::map<std::string, int>>> _variables;
-  std::stack<int> _stack;                      /// スタック
   std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
 
   // 補助クラス

@@ -1,4 +1,5 @@
 #include <string>
+#include <stack>
 #include <map>
 #include <vector>
 
@@ -46,7 +47,7 @@ public:
   // プログラムカウンタ関連
   void IncrementProgramCounter();
   void SetProgramCounter(const unsigned int num);
-  unsigned int GetProgramCounter() const;
+  const unsigned int GetProgramCounter() const;
 
   // ラベル関連
   unsigned int GetLabeledAddress(const std::string labelName) const;
@@ -61,8 +62,15 @@ public:
   void DecreaseCallStackDepth();
   const unsigned int GetCallStackDepth() const;
 
+  // 計算スタック関連
+  void PushStack(const int ele);
+  void PopStack();
+  const int TopStack() const;
+  const unsigned int GetStackSize() const;
+
 // リソース宣言
 private:
+  std::stack<int> _stack;
   std::vector<std::vector<std::string>> _instructions;
   unsigned int _programCounter;
   unsigned int _blockDepth;
