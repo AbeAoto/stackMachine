@@ -74,20 +74,20 @@ void StackMachine::Pop()
 void StackMachine::SetLocal(std::vector<std::string> inst)
 {
   // テーブルサイズ調整
-  if (_variables[_callStackDepth].size() <= _blockDepth)
+  if (_variables[_callStackDepth].size() <= _resources->GetBlockDepth())
   {
-    _variables[_callStackDepth].resize(_blockDepth+1);
+    _variables[_callStackDepth].resize(_resources->GetBlockDepth()+1);
   }
 
   std::string variableName = inst[1];
-  std::map<std::string, int>* varMap = &_variables[_callStackDepth][_blockDepth];
+  std::map<std::string, int>* varMap = &_variables[_callStackDepth][_resources->GetBlockDepth()];
   (*varMap)[variableName] = _stack.top();
 }
 
 void StackMachine::GetLocal(std::vector<std::string> inst)
 {
   std::string variableName = inst[1];
-  for (int blockDepth = _blockDepth; 0 <= blockDepth; blockDepth--) {
+  for (int blockDepth = _resources->GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
 
     // その階層で変数が宣言されていない場合スキップ
     if (_variables[_callStackDepth].size() <= blockDepth)

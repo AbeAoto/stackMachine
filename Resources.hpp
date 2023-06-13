@@ -46,8 +46,13 @@ public:
   unsigned int GetLabeledAddress(const std::string labelName) const;
   void SetLabel(const std::string labelName, const unsigned int address);
 
+  // ブロック・コールスタック関連
+  void IncreaseBlockDepth();
+  void DecreaseBlockDepth();
+  const unsigned int GetBlockDepth() const;
 // リソース宣言
 private:
   unsigned int _programCounter;
+  unsigned int _blockDepth;
   std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
 };

@@ -35,7 +35,7 @@ class StackMachine
 {
 public:
   // コンストラクタ・デストラクタ
-  StackMachine(std::string fileName) : _callStackDepth(1), _blockDepth(0)
+  StackMachine(std::string fileName) : _callStackDepth(1)
   {
     _variables.resize(2);
 
@@ -83,7 +83,7 @@ private:
   std::vector<std::vector<std::map<std::string, int>>> _variables;
   std::stack<int> _stack;                      /// スタック
   std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
-  unsigned int _blockDepth;
+  
   unsigned int _callStackDepth;
 
   // 定数関連
