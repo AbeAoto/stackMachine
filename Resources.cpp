@@ -12,6 +12,38 @@ Resources* Resources::GetInstance()
   return _singleton;
 }
 
+const unsigned int Resources::GetInstructionsSize() const
+{
+  return _instructions.size();
+}
+
+void Resources::SetInstruction(std::vector<std::string> inst, const unsigned short pc)
+{
+  if (pc < 0)
+  {
+    std::cerr << "[fatal][err]Invalid operation in SetInstruction().   Line : "
+              << GetProgramCounter() << std::endl;
+  }
+
+  if (_instructions.size() <= pc)
+  {
+    _instructions.resize(pc+1);
+  }
+
+  _instructions[pc] = inst;
+}
+
+const std::vector<std::string> Resources::LoadInstruction(const unsigned short pc) const
+{
+  if (pc < 0 || _instructions.size() <= pc)
+  {
+    std::cerr << "[fatal][err]Invalid operation in LoadInstruction().   Line : "
+              << GetProgramCounter() << std::endl;
+  }
+
+  return _instructions[pc];
+}
+
 void Resources::SetProgramCounter(const unsigned int num)
 {
   _programCounter = num;

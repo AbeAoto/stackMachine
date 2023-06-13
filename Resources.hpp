@@ -1,5 +1,6 @@
 #include <string>
 #include <map>
+#include <vector>
 
 #pragma once
 
@@ -10,7 +11,7 @@ private:
   static Resources* _singleton;
 
   // コンストラクタ
-  Resources() : _programCounter(0) {};
+  Resources() : _programCounter(0), _callStackDepth(1) {};
 
   // コピーコンストラクタ
   Resources(const Resources& src)
@@ -37,6 +38,11 @@ public:
   // singleton用インスタンス取得関数
   static Resources* GetInstance();
 
+  // 命令関連
+  const unsigned int GetInstructionsSize() const;
+  void SetInstruction(std::vector<std::string> inst, const unsigned short pc);
+  const std::vector<std::string> LoadInstruction(const unsigned short pc) const;
+
   // プログラムカウンタ関連
   void IncrementProgramCounter();
   void SetProgramCounter(const unsigned int num);
@@ -57,6 +63,7 @@ public:
 
 // リソース宣言
 private:
+  std::vector<std::vector<std::string>> _instructions;
   unsigned int _programCounter;
   unsigned int _blockDepth;
   unsigned int _callStackDepth;
