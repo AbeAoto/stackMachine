@@ -272,25 +272,6 @@ void StackMachine::LogNot()
   _stack.push(!stackTop);
 }
 
-const unsigned short StackMachine::GetOpecodeFromInstruction(const unsigned int instruction) const
-{
-  return (instruction & ~((1 << _operandBytes) - 1)) >> _operandBytes;
-}
-
-const short StackMachine::GetOperandFromInstruction(const unsigned int instruction) const
-{
-  return instruction & ((1 << _operandBytes) - 1);
-}
-
-unsigned short StackMachine::stringToHash(const std::string& str)
-{
-  unsigned short hash = 0;
-  for (char ch : str) {
-    hash = (hash << 1) ^ ch;
-  }
-  return hash;
-}
-
 OPECODES StackMachine::StringToOpecodes(std::string instruction)
 {
   if (instruction ==  "PUSH")          return OPECODES::PUSH;

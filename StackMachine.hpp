@@ -69,26 +69,13 @@ private:
   void Lt();
   void LogNot();
 
-  // 命令→オペコード・オペランド変換
-  const unsigned short GetOpecodeFromInstruction(const unsigned int instruction) const;
-  const short GetOperandFromInstruction(const unsigned int instruction) const;
-
-  // ハッシュ関連(ラベル・変数)
-  unsigned short stringToHash(const std::string& str);
-
+  // String ⇔ オペコードenum変換
   OPECODES StringToOpecodes(std::string instruction);
 
   // アーキテクチャ関連
   std::vector<std::vector<std::map<std::string, int>>> _variables;
   std::stack<int> _stack;                      /// スタック
   std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
-
-  // 定数関連
-  const unsigned short _opecodeBytes = 16;
-  const unsigned short _operandBytes = 16;
-
-  const unsigned short _labelNameBytes = 16;
-  const unsigned short _labelAddressBytes = 16;
 
   // 補助クラス
   InputMgr* _inputMgr;
