@@ -37,8 +37,6 @@ public:
   // コンストラクタ・デストラクタ
   StackMachine(std::string fileName)
   {
-    _variables.resize(2);
-
     _inputMgr = new InputMgr(fileName);
     _resources = Resources::GetInstance();
   };
@@ -73,7 +71,6 @@ private:
   OPECODES StringToOpecodes(std::string instruction);
 
   // アーキテクチャ関連
-  std::vector<std::vector<std::map<std::string, int>>> _variables;
   std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
 
   // 補助クラス

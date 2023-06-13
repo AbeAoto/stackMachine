@@ -74,40 +74,12 @@ void StackMachine::Pop()
 
 void StackMachine::SetLocal(std::vector<std::string> inst)
 {
-  // テーブルサイズ調整
-  if (_variables[_resources->GetCallStackDepth()].size() <= _resources->GetBlockDepth())
-  {
-    _variables[_resources->GetCallStackDepth()].resize(_resources->GetBlockDepth()+1);
-  }
-
-  std::string variableName = inst[1];
-  std::map<std::string, int>* varMap = &_variables[_resources->GetCallStackDepth()][_resources->GetBlockDepth()];
-  (*varMap)[variableName] = _resources->TopStack();
+  _resources->SetLocalVariable(inst[1], _resources->TopStack());
 }
 
 void StackMachine::GetLocal(std::vector<std::string> inst)
 {
-  std::string variableName = inst[1];
-  for (int blockDepth = _resources->GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
-
-    // その階層で変数が宣言されていない場合スキップ
-    if (_variables[_resources->GetCallStackDepth()].size() <= blockDepth)
-      continue;
-
-    std::map<std::string, int> varMap = _variables[_resources->GetCallStackDepth()][blockDepth];
-    auto varInfo = _variables[_resources->GetCallStackDepth()][blockDepth].find(variableName);
-
-    // 要素が存在していた場合
-    if (varInfo != _variables[_resources->GetCallStackDepth()][blockDepth].end())
-    {
-      _resources->PushStack(varInfo->second);
-      return;
-    }
-  }
-
-  std::cerr << "[err] variable \"" << variableName
-            << "\" is not declared.   Line : " << _resources->GetProgramCounter() <<  std::endl;
-  exit(1);
+  _resources->PushStack(_resources->GetLocalVariableValue(inst[1]));
 }
 
 // void StackMachine::Call(const unsigned short func)

@@ -44,6 +44,39 @@ const std::vector<std::string> Resources::LoadInstruction(const unsigned short p
   return _instructions[pc];
 }
 
+void Resources::SetLocalVariable(std::string varName, int varVal)
+{
+  if (_variables[GetCallStackDepth()].size() <= GetBlockDepth())
+  {
+    _variables[GetCallStackDepth()].resize(GetBlockDepth()+1);
+  }
+
+  _variables[GetCallStackDepth()][GetBlockDepth()][varName] = varVal;
+}
+
+const int Resources::GetLocalVariableValue(std::string varName) const
+{
+  for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
+
+    // ‚»‚ÌŠK‘w‚Å•Ï”‚ªéŒ¾‚³‚ê‚Ä‚¢‚È‚¢ê‡ƒXƒLƒbƒv
+    if (_variables[GetCallStackDepth()].size() <= blockDepth)
+      continue;
+
+    std::map<std::string, int> varMap = _variables[GetCallStackDepth()][blockDepth];
+    auto varInfo = _variables[GetCallStackDepth()][blockDepth].find(varName);
+
+    // —v‘f‚ª‘¶Ý‚µ‚Ä‚¢‚½ê‡
+    if (varInfo != varMap.end())
+    {
+      return varInfo->second;
+    }
+  }
+
+  std::cerr << "[err] variable \"" << varName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+  exit(1);
+}
+
 void Resources::SetProgramCounter(const unsigned int num)
 {
   _programCounter = num;

@@ -12,7 +12,10 @@ private:
   static Resources* _singleton;
 
   // コンストラクタ
-  Resources() : _programCounter(0), _callStackDepth(1) {};
+  Resources() : _programCounter(0), _callStackDepth(1), _blockDepth(0)
+  {
+    _variables.resize(2);
+  };
 
   // コピーコンストラクタ
   Resources(const Resources& src)
@@ -44,6 +47,10 @@ public:
   void SetInstruction(std::vector<std::string> inst, const unsigned short pc);
   const std::vector<std::string> LoadInstruction(const unsigned short pc) const;
 
+  // 変数関連
+  void SetLocalVariable(std::string varName, int varVal);
+  const int GetLocalVariableValue(std::string varName) const;
+
   // プログラムカウンタ関連
   void IncrementProgramCounter();
   void SetProgramCounter(const unsigned int num);
@@ -72,6 +79,7 @@ public:
 private:
   std::stack<int> _stack;
   std::vector<std::vector<std::string>> _instructions;
+  std::vector<std::vector<std::map<std::string, int>>> _variables;
   unsigned int _programCounter;
   unsigned int _blockDepth;
   unsigned int _callStackDepth;
