@@ -70,9 +70,6 @@ private:
   // String ⇔ オペコードenum変換
   OPECODES StringToOpecodes(std::string instruction);
 
-  // アーキテクチャ関連
-  std::stack<unsigned short> _callStack;                  /// 関数のコールスタック
-
   // 補助クラス
   InputMgr* _inputMgr;
   Resources* _resources;

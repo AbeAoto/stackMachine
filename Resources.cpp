@@ -63,7 +63,7 @@ const int Resources::GetLocalVariableValue(std::string varName) const
       continue;
 
     std::map<std::string, int> varMap = _variables[GetCallStackDepth()][blockDepth];
-    auto varInfo = _variables[GetCallStackDepth()][blockDepth].find(varName);
+    auto varInfo = varMap.find(varName);
 
     // —v‘f‚ª‘¶İ‚µ‚Ä‚¢‚½ê‡
     if (varInfo != varMap.end())

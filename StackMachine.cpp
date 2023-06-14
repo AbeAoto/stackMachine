@@ -1,4 +1,4 @@
-#include "stackMachine.hpp"
+#include "StackMachine.hpp"
 #include <iostream>
 #include <fstream>
 #include <bitset>
@@ -81,12 +81,6 @@ void StackMachine::GetLocal(std::vector<std::string> inst)
 {
   _resources->PushStack(_resources->GetLocalVariableValue(inst[1]));
 }
-
-// void StackMachine::Call(const unsigned short func)
-// {
-//     _callStack.push(_resources->GetProgramCounter());
-//     Jump(func);
-// }
 
 void StackMachine::Add()
 {
