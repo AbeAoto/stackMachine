@@ -1,4 +1,4 @@
-﻿#include "stackMachine.hpp"
+﻿#include "StackMachine.hpp"
 #include <iostream>
 
 int main(void)
