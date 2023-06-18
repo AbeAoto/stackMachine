@@ -8,7 +8,7 @@ void StackMachine::DoInstructions()
   _resources->SetProgramCounter(0);
 
   while (true) {
-    bool readNewLine = ((int)_resources->GetInstructionsSize() - 1 <= (int)_resources->GetProgramCounter());
+    bool readNewLine = ((int)_resources->GetInstructionsSize() - 1 < (int)_resources->GetProgramCounter());
     // 新規読み込み判定
     if (readNewLine)
     {
@@ -22,16 +22,25 @@ void StackMachine::DoInstructions()
     // ラベルの新規登録
     if(opString.back() == ':')
     {
+      // エラー処理
       if (opString.size() - 1 <= 0)
       {
         std::cerr << "[err] Label Name is not required.   Line : " << _resources->GetProgramCounter() <<  std::endl;
         exit(1);
       }
 
+      // 新規ラベル登録
       if (readNewLine)
       {
         opString.pop_back();
         _resources->SetLabel(opString, _resources->GetProgramCounter());
+      }
+
+      // 後方JUMPだった場合のラベルサーチ処理
+      if (opString == _searchingLabelName)
+      {
+        _isSearchingJumpLabel = false;
+        _searchingLabelName = "";
       }
 
       _resources->IncrementProgramCounter();
@@ -39,6 +48,20 @@ void StackMachine::DoInstructions()
     }
 
     OPECODES op = StringToOpecodes(opString);
+
+    // ラベルサーチ中だった場合命令は実行せず読み飛ばす
+    if (_isSearchingJumpLabel)
+    {
+      if (op == OPECODES::END)
+      {
+          std::cerr << "[err] The program has reached the endpoint but JUMP label is not found.  LABEL name: "
+                  << _searchingLabelName << std::endl;
+        exit(1);
+      }
+      _resources->IncrementProgramCounter();
+      continue;
+    }
+
     switch (op)
     {
     case OPECODES::PUSH:     Push(inst);  break;
@@ -168,7 +191,16 @@ void StackMachine::Jump(std::vector<std::string> inst)
     exit(1);
   }
 
-  _resources->SetProgramCounter(_resources->GetLabeledAddress(inst[1]));
+  unsigned int newPC = _resources->GetLabeledAddress(inst[1]);
+  if (newPC == -1)  // ラベルがまだ登録されていない場合
+  {
+    _isSearchingJumpLabel = true;
+    _searchingLabelName = inst[1];
+  }
+  else
+  {
+    _resources->SetProgramCounter(_resources->GetLabeledAddress(inst[1]));
+  }
 }
 
 void StackMachine::Jpeq0(std::vector<std::string> inst)
