@@ -77,6 +77,56 @@ const int Resources::GetLocalVariableValue(std::string varName) const
   exit(1);
 }
 
+void Resources::AllocateLocalArray(std::string arrayName, int size)
+{
+  std::cout << "hey" << std::endl;
+  if (_arrays[GetCallStackDepth()].size() <= GetBlockDepth())
+  {
+    _arrays[GetCallStackDepth()].resize(GetBlockDepth()+1);
+  }
+
+  _arrays[GetCallStackDepth()][GetBlockDepth()][arrayName].resize(size);
+}
+
+void Resources::SetLocalArrayAt(std::string arrayName, const unsigned int idx, int data)
+{
+  for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
+
+    // ‚»‚ÌŠK‘w‚Å•Ï”‚ªéŒ¾‚³‚ê‚Ä‚¢‚È‚¢ê‡ƒXƒLƒbƒv
+    if (_arrays[GetCallStackDepth()].size() <= blockDepth)
+      continue;
+
+    std::cout << "now Array List" << std::endl;
+    for (auto itr = _arrays[GetCallStackDepth()][blockDepth].begin(); itr != _arrays[GetCallStackDepth()][blockDepth].end(); itr++)
+    {
+      std::cout << itr->first << std::endl;
+    }
+
+    auto mapEnd = _arrays[GetCallStackDepth()][blockDepth].end();
+    auto arrInfo = _arrays[GetCallStackDepth()][blockDepth].find("testArray");
+
+    // —v‘f‚ª‘¶Ý‚µ‚Ä‚¢‚½ê‡
+    if (arrInfo != mapEnd)
+    {
+      std::vector<int>* arr = &arrInfo->second;
+      if (arr->size() <= idx)
+      {
+        std::cerr << "[err] Array idx " << idx << " is greater than array size "
+                  << arr->size() << ".   Line : " << GetProgramCounter() <<  std::endl;
+
+        exit(1);
+      }
+
+      arr->at(idx) = data;
+      return;
+    }
+  }
+
+  std::cerr << "[err] Array \"" << arrayName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+  exit(1);
+}
+
 void Resources::SetProgramCounter(const unsigned int num)
 {
   _programCounter = num;

@@ -1,8 +1,5 @@
+ALLOCARR testArray 3
 PUSH 1
-SETLOCAL hoge
-POP
-GETLOCAL hoge
-PUSH 2
-ADD
+SETARR testArray 2 1
 PRINT
 END

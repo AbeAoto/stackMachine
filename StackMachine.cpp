@@ -45,6 +45,8 @@ void StackMachine::DoInstructions()
     case OPECODES::POP:      Pop();  break;
     case OPECODES::SETLOCAL: SetLocal(inst);  break;
     case OPECODES::GETLOCAL: GetLocal(inst);  break;
+    case OPECODES::ALLOCARR: AllocateLocalArray(inst);  break;
+    case OPECODES::SETARR:   SetLocalArrayAt(inst);  break;
     case OPECODES::ADD:      Add();  break;
     case OPECODES::SUB:      Sub();  break;
     case OPECODES::MUL:      Mul();  break;
@@ -80,6 +82,19 @@ void StackMachine::SetLocal(std::vector<std::string> inst)
 void StackMachine::GetLocal(std::vector<std::string> inst)
 {
   _resources->PushStack(_resources->GetLocalVariableValue(inst[1]));
+}
+
+void StackMachine::AllocateLocalArray(std::vector<std::string> inst)
+{
+  const unsigned int size = (unsigned int)std::stoi(inst[2]);
+  _resources->AllocateLocalArray(inst[1], size);
+}
+
+void StackMachine::SetLocalArrayAt(std::vector<std::string> inst)
+{
+  const unsigned int idx = (unsigned int)std::stoi(inst[2]);
+  int data = std::stoi(inst[3]);
+  _resources->SetLocalArrayAt(inst[1], idx, data);
 }
 
 void StackMachine::Add()
@@ -249,6 +264,9 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "POP")       return OPECODES::POP;
   else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
   else if (instruction == "GETLOCAL")  return OPECODES::GETLOCAL;
+  else if (instruction == "ALLOCARR")  return OPECODES::ALLOCARR;
+  else if (instruction == "SETARR")    return OPECODES::SETARR;
+  else if (instruction == "GETARR")    return OPECODES::GETARR;
   else if (instruction == "CALL")      return OPECODES::CALL;
   else if (instruction == "ADD")       return OPECODES::ADD;
   else if (instruction == "SUB")       return OPECODES::SUB;

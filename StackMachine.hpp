@@ -14,6 +14,10 @@ enum OPECODES {
   POP,
   SETLOCAL,
   GETLOCAL,
+  ALLOCARR,
+  SETARR,
+  GETARR,
+  FREEARR,
   FUNC,
   CALL,
   RET,
@@ -55,6 +59,8 @@ private:
   void Pop();
   void SetLocal(std::vector<std::string> inst);
   void GetLocal(std::vector<std::string> inst);
+  void AllocateLocalArray(std::vector<std::string> inst);
+  void SetLocalArrayAt(std::vector<std::string> inst);
   void Call(const unsigned short func);
   void Add();
   void Sub();
