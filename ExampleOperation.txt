@@ -1,13 +1,22 @@
+# forの終わりインデックス設定
 PUSH 9
 SETLOCAL ForEndIdx
 POP
+
+# 配列のアロケートとフィボナッチの初期化
 ALLOCARR array 10
 SETARR array 0 1
 SETARR array 1 1
+
+# forのインデックス設定
 PUSH 2
 SETLOCAL idx
 POP
-beginLoop:
+
+
+# ループ開始
+calcFibLoop:
+# 配列操作用インデックス計算
 PUSH 1
 GETLOCAL idx
 SUB
@@ -18,23 +27,53 @@ GETLOCAL idx
 SUB
 SETLOCAL idx-2
 POP
+
+# フィボナッチ計算
 GETARR array idx-1
 GETARR array idx-2
 ADD
 SETLOCAL tempAns
-PRINT
 POP
 SETARR array idx tempAns
+
+# インデックスインデント
 GETLOCAL idx
 PUSH 1
 ADD
 SETLOCAL idx
 POP
+
+# for抜け出し判定
 GETLOCAL idx
 GETLOCAL ForEndIdx
 LT
 LOGNOT
-JPEQ0 endLoop
-JUMP beginLoop
-endLoop:
+JPEQ0 endFibLoop
+JUMP calcFibLoop
+endFibLoop:
+
+# フィボナッチの結果確認
+push 0
+SETLOCAL idx
+POP
+
+resultLoop:
+POP
+GETARR array idx
+PRINT
+POP
+
+GETLOCAL idx
+PUSH 1
+ADD
+SETLOCAL idx
+POP
+
+GETLOCAL idx
+GETLOCAL ForEndIdx
+LT LOGNOT
+JPEQ0 endResultLoop
+JUMP resultLoop
+endResultLoop:
+
 END

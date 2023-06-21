@@ -13,7 +13,16 @@ void StackMachine::DoInstructions()
     // 新規読み込み判定
     if (readNewLine)
     {
-      _resources->SetInstruction(_inputMgr->GetLineInstruction(), _resources->GetProgramCounter());
+      std::vector<std::string> lineStr = _inputMgr->GetLineInstruction();
+
+      // 空行読み飛ばし
+      if (lineStr.size() == 0)   continue;
+
+      std::cout << lineStr[0] << std::endl;
+      // コメント行読み飛ばし
+      if (lineStr[0][0] == '#')   continue;
+
+      _resources->SetInstruction(lineStr, _resources->GetProgramCounter());
     }
 
     const unsigned int instructionIdx = 0;
