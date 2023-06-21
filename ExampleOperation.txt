@@ -1,8 +1,13 @@
-ALLOCARR testArray 3
 PUSH 1
-SETARR testArray 2 1
+SETLOCAL idx
+POP
+PUSH 3
+SETLOCAL data
+POP
+ALLOCARR testArray 3
+SETARR testArray idx data
 PUSH 2
-GETARR testArray 2
+GETARR testArray idx
 FREEARR testArray
 PRINT
 END

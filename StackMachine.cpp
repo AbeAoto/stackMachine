@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <bitset>
+#include <algorithm>
 
 void StackMachine::DoInstructions()
 {
@@ -94,14 +95,22 @@ void StackMachine::AllocateLocalArray(std::vector<std::string> inst)
 
 void StackMachine::SetLocalArrayAt(std::vector<std::string> inst)
 {
-  const unsigned int idx = (unsigned int)std::stoi(inst[2]);
-  int data = std::stoi(inst[3]);
+  
+  const unsigned int idx = (isNumber(inst[2])) ?
+			    (unsigned int)std::stoi(inst[2]) :
+			    (unsigned int)_resources->GetLocalVariableValue(inst[2]);
+  int data = (isNumber(inst[3])) ?
+			    std::stoi(inst[3]) :
+			    (unsigned int)_resources->GetLocalVariableValue(inst[3]);
+			    
   _resources->SetLocalArrayAt(inst[1], idx, data);
 }
 
 void StackMachine::GetLocalArrayAt(std::vector<std::string> inst)
 {
-  const unsigned int idx = (unsigned int)std::stoi(inst[2]);
+  const unsigned int idx = (isNumber(inst[2])) ?
+    (unsigned int)std::stoi(inst[2]) :
+    (unsigned int)_resources->GetLocalVariableValue(inst[2]);
   _resources->PushStack(_resources->GetLocalArrayAt(inst[1], idx));
 }
 
@@ -293,4 +302,12 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "LT")        return OPECODES::LT;
   else if (instruction == "LOGNOT")    return OPECODES::LOGNOT;
   else                                 return OPECODES::END;
+}
+
+bool StackMachine::isNumber(const std::string& s)
+{
+  for (char const &c : s) {
+    if (std::isdigit(c) == 0)  return false;
+  }
+  return true;
 }

@@ -78,6 +78,9 @@ private:
   // String ⇔ オペコードenum変換
   OPECODES StringToOpecodes(std::string instruction);
 
+  // String → 数値判定
+  bool isNumber(const std::string& s);
+
   // 補助クラス
   InputMgr* _inputMgr;
   Resources* _resources;
