@@ -14,6 +14,10 @@ enum OPECODES {
   POP,
   SETLOCAL,
   GETLOCAL,
+  ALLOCARR,
+  SETARR,
+  GETARR,
+  FREEARR,
   FUNC,
   CALL,
   RET,
@@ -57,6 +61,10 @@ private:
   void Pop();
   void SetLocal(std::vector<std::string> inst);
   void GetLocal(std::vector<std::string> inst);
+  void AllocateLocalArray(std::vector<std::string> inst);
+  void SetLocalArrayAt(std::vector<std::string> inst);
+  void GetLocalArrayAt(std::vector<std::string> inst);
+  void FreeArray(std::vector<std::string> inst);
   void Call(const unsigned short func);
   void Add();
   void Sub();
@@ -71,6 +79,9 @@ private:
 
   // String ⇔ オペコードenum変換
   OPECODES StringToOpecodes(std::string instruction);
+
+  // String → 数値判定
+  bool isNumber(const std::string& s);
 
   // 補助変数
   bool _isSearchingJumpLabel;

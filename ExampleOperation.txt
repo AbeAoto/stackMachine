@@ -1,6 +1,40 @@
+PUSH 9
+SETLOCAL ForEndIdx
+POP
+ALLOCARR array 10
+SETARR array 0 1
+SETARR array 1 1
+PUSH 2
+SETLOCAL idx
+POP
+beginLoop:
 PUSH 1
-JUMP FUGA
+GETLOCAL idx
+SUB
+SETLOCAL idx-1
+POP
+PUSH 2
+GETLOCAL idx
+SUB
+SETLOCAL idx-2
+POP
+GETARR array idx-1
+GETARR array idx-2
 ADD
-HOGE:
+SETLOCAL tempAns
 PRINT
+POP
+SETARR array idx tempAns
+GETLOCAL idx
+PUSH 1
+ADD
+SETLOCAL idx
+POP
+GETLOCAL idx
+GETLOCAL ForEndIdx
+LT
+LOGNOT
+JPEQ0 endLoop
+JUMP beginLoop
+endLoop:
 END

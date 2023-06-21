@@ -14,6 +14,7 @@ private:
   // コンストラクタ
   Resources() : _programCounter(0), _callStackDepth(1), _blockDepth(0)
   {
+    _arrays.resize(2);
     _variables.resize(2);
   };
 
@@ -51,6 +52,12 @@ public:
   void SetLocalVariable(std::string varName, int varVal);
   const int GetLocalVariableValue(std::string varName) const;
 
+  // 配列関連
+  void AllocateLocalArray(std::string arrayName, int size);
+  void SetLocalArrayAt(std::string arrayName, const unsigned int idx, int data);
+  int GetLocalArrayAt(std::string arrayName, const unsigned int idx);
+  void FreeLocalArray(std::string arrayName);
+
   // プログラムカウンタ関連
   void IncrementProgramCounter();
   void SetProgramCounter(const unsigned int num);
@@ -80,6 +87,7 @@ private:
   std::stack<int> _stack;
   std::vector<std::vector<std::string>> _instructions;
   std::vector<std::vector<std::map<std::string, int>>> _variables;
+  std::vector<std::vector<std::map<std::string, std::vector<int>>>> _arrays;
   unsigned int _programCounter;
   unsigned int _blockDepth;
   unsigned int _callStackDepth;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <bitset>
+#include <algorithm>
 
 void StackMachine::DoInstructions()
 {
@@ -68,6 +69,10 @@ void StackMachine::DoInstructions()
     case OPECODES::POP:      Pop();  break;
     case OPECODES::SETLOCAL: SetLocal(inst);  break;
     case OPECODES::GETLOCAL: GetLocal(inst);  break;
+    case OPECODES::ALLOCARR: AllocateLocalArray(inst);  break;
+    case OPECODES::SETARR:   SetLocalArrayAt(inst);  break;
+    case OPECODES::GETARR:   GetLocalArrayAt(inst);  break;
+    case OPECODES::FREEARR:  FreeArray(inst);  break;
     case OPECODES::ADD:      Add();  break;
     case OPECODES::SUB:      Sub();  break;
     case OPECODES::MUL:      Mul();  break;
@@ -103,6 +108,38 @@ void StackMachine::SetLocal(std::vector<std::string> inst)
 void StackMachine::GetLocal(std::vector<std::string> inst)
 {
   _resources->PushStack(_resources->GetLocalVariableValue(inst[1]));
+}
+
+void StackMachine::AllocateLocalArray(std::vector<std::string> inst)
+{
+  const unsigned int size = (unsigned int)std::stoi(inst[2]);
+  _resources->AllocateLocalArray(inst[1], size);
+}
+
+void StackMachine::SetLocalArrayAt(std::vector<std::string> inst)
+{
+  
+  const unsigned int idx = (isNumber(inst[2])) ?
+			    (unsigned int)std::stoi(inst[2]) :
+			    (unsigned int)_resources->GetLocalVariableValue(inst[2]);
+  int data = (isNumber(inst[3])) ?
+			    std::stoi(inst[3]) :
+			    (unsigned int)_resources->GetLocalVariableValue(inst[3]);
+			    
+  _resources->SetLocalArrayAt(inst[1], idx, data);
+}
+
+void StackMachine::GetLocalArrayAt(std::vector<std::string> inst)
+{
+  const unsigned int idx = (isNumber(inst[2])) ?
+    (unsigned int)std::stoi(inst[2]) :
+    (unsigned int)_resources->GetLocalVariableValue(inst[2]);
+  _resources->PushStack(_resources->GetLocalArrayAt(inst[1], idx));
+}
+
+void StackMachine::FreeArray(std::vector<std::string> inst)
+{
+  _resources->FreeLocalArray(inst[1]);
 }
 
 void StackMachine::Add()
@@ -241,6 +278,7 @@ void StackMachine::Gt()
   _resources->PopStack();
   int op2 = _resources->TopStack();
   _resources->PopStack();
+
   _resources->PushStack(op1 > op2);
 }
 
@@ -253,10 +291,11 @@ void StackMachine::Lt()
     exit(1);
   }
 
-  int op2 = _resources->TopStack();
-  _resources->PopStack();
   int op1 = _resources->TopStack();
   _resources->PopStack();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+
   _resources->PushStack(op1 < op2);
 }
 
@@ -281,6 +320,10 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "POP")       return OPECODES::POP;
   else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
   else if (instruction == "GETLOCAL")  return OPECODES::GETLOCAL;
+  else if (instruction == "ALLOCARR")  return OPECODES::ALLOCARR;
+  else if (instruction == "SETARR")    return OPECODES::SETARR;
+  else if (instruction == "GETARR")    return OPECODES::GETARR;
+  else if (instruction == "FREEARR")   return OPECODES::FREEARR;
   else if (instruction == "CALL")      return OPECODES::CALL;
   else if (instruction == "ADD")       return OPECODES::ADD;
   else if (instruction == "SUB")       return OPECODES::SUB;
@@ -293,4 +336,12 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "LT")        return OPECODES::LT;
   else if (instruction == "LOGNOT")    return OPECODES::LOGNOT;
   else                                 return OPECODES::END;
+}
+
+bool StackMachine::isNumber(const std::string& s)
+{
+  for (char const &c : s) {
+    if (std::isdigit(c) == 0)  return false;
+  }
+  return true;
 }
