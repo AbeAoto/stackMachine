@@ -79,7 +79,6 @@ const int Resources::GetLocalVariableValue(std::string varName) const
 
 void Resources::AllocateLocalArray(std::string arrayName, int size)
 {
-  std::cout << "hey" << std::endl;
   if (_arrays[GetCallStackDepth()].size() <= GetBlockDepth())
   {
     _arrays[GetCallStackDepth()].resize(GetBlockDepth()+1);
@@ -96,14 +95,8 @@ void Resources::SetLocalArrayAt(std::string arrayName, const unsigned int idx, i
     if (_arrays[GetCallStackDepth()].size() <= blockDepth)
       continue;
 
-    std::cout << "now Array List" << std::endl;
-    for (auto itr = _arrays[GetCallStackDepth()][blockDepth].begin(); itr != _arrays[GetCallStackDepth()][blockDepth].end(); itr++)
-    {
-      std::cout << itr->first << std::endl;
-    }
-
     auto mapEnd = _arrays[GetCallStackDepth()][blockDepth].end();
-    auto arrInfo = _arrays[GetCallStackDepth()][blockDepth].find("testArray");
+    auto arrInfo = _arrays[GetCallStackDepth()][blockDepth].find(arrayName);
 
     // —v‘f‚ª‘¶Ý‚µ‚Ä‚¢‚½ê‡
     if (arrInfo != mapEnd)
@@ -118,6 +111,63 @@ void Resources::SetLocalArrayAt(std::string arrayName, const unsigned int idx, i
       }
 
       arr->at(idx) = data;
+      return;
+    }
+  }
+
+  std::cerr << "[err] Array \"" << arrayName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+  exit(1);
+}
+
+int Resources::GetLocalArrayAt(std::string arrayName, const unsigned int idx)
+{
+  for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
+
+    // ‚»‚ÌŠK‘w‚Å•Ï”‚ªéŒ¾‚³‚ê‚Ä‚¢‚È‚¢ê‡ƒXƒLƒbƒv
+    if (_arrays[GetCallStackDepth()].size() <= blockDepth)
+      continue;
+
+    auto mapEnd = _arrays[GetCallStackDepth()][blockDepth].end();
+    auto arrInfo = _arrays[GetCallStackDepth()][blockDepth].find(arrayName);
+
+    // —v‘f‚ª‘¶Ý‚µ‚Ä‚¢‚½ê‡
+    if (arrInfo != mapEnd)
+    {
+      std::vector<int>* arr = &arrInfo->second;
+      if (arr->size() <= idx)
+      {
+        std::cerr << "[err] Array idx " << idx << " is greater than array size "
+                  << arr->size() << ".   Line : " << GetProgramCounter() <<  std::endl;
+
+        exit(1);
+      }
+
+      return arr->at(idx);
+    }
+  }
+
+  std::cerr << "[err] Array \"" << arrayName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+  exit(1);
+}
+
+void Resources::FreeLocalArray(std::string arrayName)
+{
+  for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
+
+    // ‚»‚ÌŠK‘w‚Å•Ï”‚ªéŒ¾‚³‚ê‚Ä‚¢‚È‚¢ê‡ƒXƒLƒbƒv
+    if (_arrays[GetCallStackDepth()].size() <= blockDepth)
+      continue;
+
+    auto mapEnd = _arrays[GetCallStackDepth()][blockDepth].end();
+    auto arrInfo = _arrays[GetCallStackDepth()][blockDepth].find(arrayName);
+
+    // —v‘f‚ª‘¶Ý‚µ‚Ä‚¢‚½ê‡
+    if (arrInfo != mapEnd)
+    {
+      _arrays[GetCallStackDepth()][blockDepth].erase(arrayName);
+
       return;
     }
   }

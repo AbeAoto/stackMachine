@@ -1,5 +1,8 @@
 ALLOCARR testArray 3
 PUSH 1
 SETARR testArray 2 1
+PUSH 2
+GETARR testArray 2
+FREEARR testArray
 PRINT
 END

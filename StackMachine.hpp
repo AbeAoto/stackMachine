@@ -61,6 +61,8 @@ private:
   void GetLocal(std::vector<std::string> inst);
   void AllocateLocalArray(std::vector<std::string> inst);
   void SetLocalArrayAt(std::vector<std::string> inst);
+  void GetLocalArrayAt(std::vector<std::string> inst);
+  void FreeArray(std::vector<std::string> inst);
   void Call(const unsigned short func);
   void Add();
   void Sub();
