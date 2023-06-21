@@ -278,6 +278,7 @@ void StackMachine::Gt()
   _resources->PopStack();
   int op2 = _resources->TopStack();
   _resources->PopStack();
+
   _resources->PushStack(op1 > op2);
 }
 
@@ -290,10 +291,11 @@ void StackMachine::Lt()
     exit(1);
   }
 
-  int op2 = _resources->TopStack();
-  _resources->PopStack();
   int op1 = _resources->TopStack();
   _resources->PopStack();
+  int op2 = _resources->TopStack();
+  _resources->PopStack();
+
   _resources->PushStack(op1 < op2);
 }
 
