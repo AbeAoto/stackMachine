@@ -39,7 +39,9 @@ class StackMachine
 {
 public:
   // コンストラクタ・デストラクタ
-  StackMachine(std::string fileName)
+  StackMachine(std::string fileName) :
+    _isSearchingJumpLabel(false),
+    _searchingLabelName("")
   {
     _inputMgr = new InputMgr(fileName);
     _resources = Resources::GetInstance();
@@ -80,6 +82,10 @@ private:
 
   // String → 数値判定
   bool isNumber(const std::string& s);
+
+  // 補助変数
+  bool _isSearchingJumpLabel;
+  std::string _searchingLabelName;
 
   // 補助クラス
   InputMgr* _inputMgr;
