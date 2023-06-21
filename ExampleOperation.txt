@@ -1,13 +1,40 @@
-PUSH 1
+PUSH 9
+SETLOCAL ForEndIdx
+POP
+ALLOCARR array 10
+SETARR array 0 1
+SETARR array 1 1
+PUSH 2
 SETLOCAL idx
 POP
-PUSH 3
-SETLOCAL data
-POP
-ALLOCARR testArray 3
-SETARR testArray idx data
-PUSH 2
-GETARR testArray idx
-FREEARR testArray
+beginLoop:
+PUSH 1
+GETLOCAL idx
+SUB
+SETLOCAL idx-1
 PRINT
+POP
+PUSH 2
+GETLOCAL idx
+SUB
+SETLOCAL idx-2
+PRINT
+POP
+GETARR array idx-1
+GETARR array idx-2
+ADD
+SETLOCAL tempAns
+PRINT
+POP
+SETARR array idx tempAns
+GETLOCAL idx
+PUSH 1
+ADD
+SETLOCAL idx
+POP
+GETLOCAL ForEndIdx
+GETLOCAL idx
+GT
+JPEQ0 endLoop
+endLoop:
 END
