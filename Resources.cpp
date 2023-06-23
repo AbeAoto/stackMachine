@@ -46,6 +46,11 @@ const std::vector<std::string> Resources::LoadInstruction(const unsigned short p
 
 void Resources::SetLocalVariable(std::string varName, int varVal)
 {
+  if (_variables.size() <= GetCallStackDepth())
+  {
+    _variables.resize(GetCallStackDepth()+1);
+  }
+
   if (_variables[GetCallStackDepth()].size() <= GetBlockDepth())
   {
     _variables[GetCallStackDepth()].resize(GetBlockDepth()+1);
@@ -79,6 +84,11 @@ const int Resources::GetLocalVariableValue(std::string varName) const
 
 void Resources::AllocateLocalArray(std::string arrayName, int size)
 {
+  if (_arrays.size() <= GetCallStackDepth())
+  {
+    _arrays.resize(GetCallStackDepth()+1);
+  }
+
   if (_arrays[GetCallStackDepth()].size() <= GetBlockDepth())
   {
     _arrays[GetCallStackDepth()].resize(GetBlockDepth()+1);
