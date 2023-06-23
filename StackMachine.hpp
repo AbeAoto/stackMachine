@@ -26,7 +26,6 @@ enum OPECODES {
   MUL,
   DIV,
   PRINT,
-  LABEL,
   JUMP,
   JPEQ0,
   GT,

@@ -127,14 +127,14 @@ void StackMachine::AllocateLocalArray(std::vector<std::string> inst)
 
 void StackMachine::SetLocalArrayAt(std::vector<std::string> inst)
 {
-  
+
   const unsigned int idx = (isNumber(inst[2])) ?
 			    (unsigned int)std::stoi(inst[2]) :
 			    (unsigned int)_resources->GetLocalVariableValue(inst[2]);
   int data = (isNumber(inst[3])) ?
 			    std::stoi(inst[3]) :
 			    (unsigned int)_resources->GetLocalVariableValue(inst[3]);
-			    
+
   _resources->SetLocalArrayAt(inst[1], idx, data);
 }
 
