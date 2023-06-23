@@ -260,6 +260,18 @@ const unsigned int Resources::GetCallStackDepth() const
   return _callStackDepth;
 }
 
+void Resources::PushCallStack(const unsigned int pc)
+{
+  _callStack.push(pc);
+}
+
+const unsigned int Resources::GetCallStackTop()
+{
+  const unsigned int top = _callStack.top();
+  _callStack.pop();
+  return top;
+}
+
 void Resources::PushStack(const int ele)
 {
   _stack.push(ele);

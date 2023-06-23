@@ -79,6 +79,8 @@ public:
   void IncreaseCallStackDepth();
   void DecreaseCallStackDepth();
   const unsigned int GetCallStackDepth() const;
+  void PushCallStack(const unsigned int pc);
+  const unsigned int GetCallStackTop();
 
   // 計算スタック関連
   void PushStack(const int ele);
@@ -94,6 +96,7 @@ private:
   std::vector<std::vector<std::map<std::string, std::vector<int>>>> _arrays;
   std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
   std::map<std::string, unsigned int> _functions;  /// 関数名とそのアドレスが入っている
+  std::stack<unsigned int> _callStack;
   unsigned int _programCounter;
   unsigned int _blockDepth;
   unsigned int _callStackDepth;

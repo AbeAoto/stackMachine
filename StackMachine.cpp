@@ -10,6 +10,7 @@ void StackMachine::DoInstructions()
 
   while (true) {
     bool readNewLine = ((int)_resources->GetInstructionsSize() - 1 < (int)_resources->GetProgramCounter());
+
     // 新規読み込み判定
     if (readNewLine)
     {
@@ -18,7 +19,6 @@ void StackMachine::DoInstructions()
       // 空行読み飛ばし
       if (lineStr.size() == 0)   continue;
 
-      std::cout << lineStr[0] << std::endl;
       // コメント行読み飛ばし
       if (lineStr[0][0] == '#')   continue;
 
@@ -58,10 +58,16 @@ void StackMachine::DoInstructions()
     }
 
     OPECODES op = StringToOpecodes(opString);
-
     // 関数宣言中だった場合命令は実行せず読み飛ばす
-    if (_isDeclaringFunction && op != OPECODES::RET)
+    if (_isDeclaringFunction)
     {
+      if (op == OPECODES::RET)
+      {
+        _isDeclaringFunction = false;
+        _resources->IncrementProgramCounter();
+        continue;
+      }
+
       if (op == OPECODES::END)
       {
         std::cerr << "[err] The program has reached the endpoint but Function return point is not found." << std::endl;
@@ -169,7 +175,7 @@ void StackMachine::FreeArray(std::vector<std::string> inst)
 void StackMachine::Func(std::vector<std::string> inst)
 {
   _isDeclaringFunction = true;
-  _resources->SetFunction(inst[1], _resources->GetProgramCounter()+1);
+  _resources->SetFunction(inst[1], _resources->GetProgramCounter());
 }
 
 void StackMachine::Call(std::vector<std::string> inst)
@@ -181,12 +187,15 @@ void StackMachine::Call(std::vector<std::string> inst)
               << _resources->GetProgramCounter() << std::endl;
     exit(1);
   }
+  _resources->IncreaseCallStackDepth();
+  _resources->PushCallStack(_resources->GetProgramCounter());
   _resources->SetProgramCounter(funcAddress);
 }
 
 void StackMachine::Ret()
 {
-  _isDeclaringFunction = false;
+  _resources->DecreaseCallStackDepth();
+  _resources->SetProgramCounter(_resources->GetCallStackTop());
 }
 
 void StackMachine::Add()
@@ -373,6 +382,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "FREEARR")   return OPECODES::FREEARR;
   else if (instruction == "FUNC")      return OPECODES::FUNC;
   else if (instruction == "CALL")      return OPECODES::CALL;
+  else if (instruction == "RET")       return OPECODES::RET;
   else if (instruction == "ADD")       return OPECODES::ADD;
   else if (instruction == "SUB")       return OPECODES::SUB;
   else if (instruction == "MUL")       return OPECODES::MUL;
