@@ -205,6 +205,19 @@ void Resources::SetLabel(const std::string labelName, const unsigned int address
   _labels[labelName] = address;
 }
 
+unsigned int Resources::GetFunctionAddress(const std::string funcName) const
+{
+  auto newPC = _functions.find(funcName);
+
+  // ƒ‰ƒxƒ‹‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚©‚Á‚½ê‡-1‚ð•Ô‚·
+  return (newPC == _labels.end()) ? -1 : newPC->second;
+}
+
+void Resources::SetFunction(const std::string funcName, const unsigned int address)
+{
+  _functions[funcName] = address;
+}
+
 void Resources::IncreaseBlockDepth()
 {
   _blockDepth++;

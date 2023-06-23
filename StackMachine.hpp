@@ -40,7 +40,8 @@ public:
   // コンストラクタ・デストラクタ
   StackMachine(std::string fileName) :
     _isSearchingJumpLabel(false),
-    _searchingLabelName("")
+    _searchingLabelName(""),
+    _isDeclaringFunction(false)
   {
     _inputMgr = new InputMgr(fileName);
     _resources = Resources::GetInstance();
@@ -64,7 +65,9 @@ private:
   void SetLocalArrayAt(std::vector<std::string> inst);
   void GetLocalArrayAt(std::vector<std::string> inst);
   void FreeArray(std::vector<std::string> inst);
-  void Call(const unsigned short func);
+  void Func(std::vector<std::string> inst);
+  void Call(std::vector<std::string> inst);
+  void Ret();
   void Add();
   void Sub();
   void Mul();
@@ -85,6 +88,7 @@ private:
   // 補助変数
   bool _isSearchingJumpLabel;
   std::string _searchingLabelName;
+  bool _isDeclaringFunction;
 
   // 補助クラス
   InputMgr* _inputMgr;

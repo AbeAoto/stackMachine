@@ -67,6 +67,10 @@ public:
   unsigned int GetLabeledAddress(const std::string labelName) const;
   void SetLabel(const std::string labelName, const unsigned int address);
 
+  // 関数関連
+  unsigned int GetFunctionAddress(const std::string funcName) const;
+  void SetFunction(const std::string funcName, const unsigned int address);
+
   // ブロック・コールスタック関連
   void IncreaseBlockDepth();
   void DecreaseBlockDepth();
@@ -88,9 +92,9 @@ private:
   std::vector<std::vector<std::string>> _instructions;
   std::vector<std::vector<std::map<std::string, int>>> _variables;
   std::vector<std::vector<std::map<std::string, std::vector<int>>>> _arrays;
+  std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
+  std::map<std::string, unsigned int> _functions;  /// 関数名とそのアドレスが入っている
   unsigned int _programCounter;
   unsigned int _blockDepth;
   unsigned int _callStackDepth;
-
-  std::map<std::string, unsigned int> _labels;  /// ラベルとそのアドレスが入っている
 };
