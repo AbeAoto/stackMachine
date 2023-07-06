@@ -1,0 +1,47 @@
+ALLOCGLOBALARR arr 10
+
+# フィボナッチ数列の n 番目の値を計算する関数
+# 結果はスタックトップに積まれる
+# 引数1: n
+FUNC Fib
+
+# 引数のタグ付け
+SETLOCAL n
+
+# 基底ケース n == 0?
+JPEQ0 fibEndBase
+
+# 基底ケース n == 1?
+PUSH 1
+GETLOCAL n
+SUB
+JPEQ0 fibEndBase
+
+# 既定ケース以外
+# fib(n-1)計算
+PUSH 1
+GETLOCAL n
+SUB
+CALL Fib
+
+# fib(n-2)計算
+PUSH 2
+GETLOCAL n
+SUB
+CALL Fib
+
+# fib(n-1) + fib(n-2)
+ADD
+
+JUMP fibEnd
+
+fibEndBase:
+PUSH 1
+
+fibEnd:
+RET
+
+PUSH 20
+CALL Fib
+PRINT
+END
