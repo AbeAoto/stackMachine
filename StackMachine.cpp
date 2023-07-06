@@ -99,7 +99,7 @@ void StackMachine::DoInstructions()
     case OPECODES::ALLOCLOCALARR: AllocateLocalArray(inst);  break;
     case OPECODES::SETLOCALARR:   SetLocalArrayAt(inst);  break;
     case OPECODES::GETLOCALARR:   GetLocalArrayAt(inst);  break;
-    case OPECODES::FREEARR:  FreeArray(inst);  break;
+    case OPECODES::FREELOCALARR:  FreeLocalArray(inst);  break;
     case OPECODES::FUNC:     Func(inst);  break;
     case OPECODES::CALL:     Call(inst);  break;
     case OPECODES::RET:      Ret();  break;
@@ -168,7 +168,7 @@ void StackMachine::GetLocalArrayAt(std::vector<std::string> inst)
   _resources->PushStack(_resources->GetLocalArrayAt(inst[1], idx));
 }
 
-void StackMachine::FreeArray(std::vector<std::string> inst)
+void StackMachine::FreeLocalArray(std::vector<std::string> inst)
 {
   _resources->FreeLocalArray(inst[1]);
 }
@@ -405,7 +405,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "ALLOCLOCALARR")  return OPECODES::ALLOCLOCALARR;
   else if (instruction == "SETLOCALARR")    return OPECODES::SETLOCALARR;
   else if (instruction == "GETLOCALARR")    return OPECODES::GETLOCALARR;
-  else if (instruction == "FREEARR")   return OPECODES::FREEARR;
+  else if (instruction == "FREELOCALARR")   return OPECODES::FREELOCALARR;
   else if (instruction == "FUNC")      return OPECODES::FUNC;
   else if (instruction == "CALL")      return OPECODES::CALL;
   else if (instruction == "RET")       return OPECODES::RET;
