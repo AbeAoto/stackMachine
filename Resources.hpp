@@ -62,6 +62,7 @@ public:
   int GetLocalArrayAt(std::string arrayName, const unsigned int idx);
   int GetGlobalArrayAt(std::string arrayName, const unsigned int idx);
   void FreeLocalArray(std::string arrayName);
+  void FreeGlobalArray(std::string arrayName);
 
   // プログラムカウンタ関連
   void IncrementProgramCounter();

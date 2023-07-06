@@ -103,6 +103,7 @@ void StackMachine::DoInstructions()
     case OPECODES::GETLOCALARR:   GetLocalArrayAt(inst);  break;
     case OPECODES::GETGLOBALARR:   GetGlobalArrayAt(inst);  break;
     case OPECODES::FREELOCALARR:  FreeLocalArray(inst);  break;
+    case OPECODES::FREEGLOBALARR:  FreeGlobalArray(inst);  break;
     case OPECODES::FUNC:     Func(inst);  break;
     case OPECODES::CALL:     Call(inst);  break;
     case OPECODES::RET:      Ret();  break;
@@ -201,6 +202,11 @@ void StackMachine::GetGlobalArrayAt(std::vector<std::string> inst)
 void StackMachine::FreeLocalArray(std::vector<std::string> inst)
 {
   _resources->FreeLocalArray(inst[1]);
+}
+
+void StackMachine::FreeGlobalArray(std::vector<std::string> inst)
+{
+  _resources->FreeGlobalArray(inst[1]);
 }
 
 void StackMachine::Func(std::vector<std::string> inst)
@@ -439,6 +445,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "GETLOCALARR")    return OPECODES::GETLOCALARR;
   else if (instruction == "GETGLOBALARR")    return OPECODES::GETGLOBALARR;
   else if (instruction == "FREELOCALARR")   return OPECODES::FREELOCALARR;
+  else if (instruction == "FREEGLOBALARR")   return OPECODES::FREEGLOBALARR;
   else if (instruction == "FUNC")      return OPECODES::FUNC;
   else if (instruction == "CALL")      return OPECODES::CALL;
   else if (instruction == "RET")       return OPECODES::RET;

@@ -100,7 +100,6 @@ void Resources::AllocateLocalArray(std::string arrayName, int size)
 void Resources::AllocateGlobalArray(std::string arrayName, int size)
 {
   _arrays[0][0][arrayName].resize(size);
-  std::cout << "Alloc Glob " << _arrays[0][0][arrayName].size() << std::endl;
 }
 
 
@@ -154,7 +153,6 @@ void Resources::SetGlobalArrayAt(std::string arrayName, const unsigned int idx, 
       exit(1);
     }
     arr->at(idx) = data;
-    std::cout << "SetGlobalArrayAt " << arr->at(idx) << std::endl;
     return;
   }
 
@@ -239,6 +237,24 @@ void Resources::FreeLocalArray(std::string arrayName)
 
       return;
     }
+  }
+
+  std::cerr << "[err] Array \"" << arrayName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+  exit(1);
+}
+
+void Resources::FreeGlobalArray(std::string arrayName)
+{
+  auto mapEnd = _arrays[0][0].end();
+  auto arrInfo = _arrays[0][0].find(arrayName);
+
+  // —v‘f‚ª‘¶Ý‚µ‚Ä‚¢‚½ê‡
+  if (arrInfo != mapEnd)
+  {
+    _arrays[0][0].erase(arrayName);
+
+    return;
   }
 
   std::cerr << "[err] Array \"" << arrayName

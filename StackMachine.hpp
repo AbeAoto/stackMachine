@@ -21,6 +21,7 @@ enum OPECODES {
   GETLOCALARR,
   GETGLOBALARR,
   FREELOCALARR,
+  FREEGLOBALARR,
   FUNC,
   CALL,
   RET,
@@ -72,6 +73,7 @@ private:
   void GetLocalArrayAt(std::vector<std::string> inst);
   void GetGlobalArrayAt(std::vector<std::string> inst);
   void FreeLocalArray(std::vector<std::string> inst);
+  void FreeGlobalArray(std::vector<std::string> inst);
   void Func(std::vector<std::string> inst);
   void Call(std::vector<std::string> inst);
   void Ret();
