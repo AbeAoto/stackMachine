@@ -110,6 +110,7 @@ void StackMachine::DoInstructions()
     case OPECODES::PRINT:    Print();  break;
     case OPECODES::JUMP:     Jump(inst);  break;
     case OPECODES::JPEQ0:    Jpeq0(inst);  break;
+    case OPECODES::JPNEQ0:   Jpneq0(inst);  break;
     case OPECODES::GT:       Gt();  break;
     case OPECODES::LT:       Lt();  break;
     case OPECODES::LOGNOT:   LogNot();  break;
@@ -313,6 +314,31 @@ void StackMachine::Jpeq0(std::vector<std::string> inst)
   }
 
   bool needToJump = (_resources->TopStack() == 0);
+  _resources->PopStack();
+
+  if (needToJump)
+  {
+    Jump(inst);
+  }
+}
+
+void StackMachine::Jpneq0(std::vector<std::string> inst)
+{
+  if (inst.size() <= 1)
+  {
+    std::cerr << "[err] You need to assign jump destination label.   Line : " << _resources->GetProgramCounter() << std::endl;
+    exit(1);
+  }
+
+  // スタックが空の場合のエラー
+  if (_resources->GetStackSize() <= 0)
+  {
+    std::cerr << "[err] Stack is empty with operation JPNEQ0.   Line : "
+              << _resources->GetProgramCounter() << std::endl;
+    exit(1);
+  }
+
+  bool needToJump = (_resources->TopStack() != 0);
   _resources->PopStack();
 
   if (needToJump)

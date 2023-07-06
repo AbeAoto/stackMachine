@@ -28,6 +28,7 @@ enum OPECODES {
   PRINT,
   JUMP,
   JPEQ0,
+  JPNEQ0,
   GT,
   LT,
   LOGNOT,
@@ -75,6 +76,7 @@ private:
   void Print();
   void Jump(std::vector<std::string> inst);
   void Jpeq0(std::vector<std::string> inst);
+  void Jpneq0(std::vector<std::string> inst);
   void Gt();
   void Lt();
   void LogNot();
@@ -94,5 +96,3 @@ private:
   InputMgr* _inputMgr;
   Resources* _resources;
 };
-
-
