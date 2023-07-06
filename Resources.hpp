@@ -60,6 +60,7 @@ public:
   void SetLocalArrayAt(std::string arrayName, const unsigned int idx, int data);
   void SetGlobalArrayAt(std::string arrayName, const unsigned int idx, int data);
   int GetLocalArrayAt(std::string arrayName, const unsigned int idx);
+  int GetGlobalArrayAt(std::string arrayName, const unsigned int idx);
   void FreeLocalArray(std::string arrayName);
 
   // プログラムカウンタ関連

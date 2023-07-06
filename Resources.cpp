@@ -196,6 +196,31 @@ int Resources::GetLocalArrayAt(std::string arrayName, const unsigned int idx)
   exit(1);
 }
 
+int Resources::GetGlobalArrayAt(std::string arrayName, const unsigned int idx)
+{
+  auto mapEnd = _arrays[0][0].end();
+  auto arrInfo = _arrays[0][0].find(arrayName);
+
+  // —v‘f‚ª‘¶İ‚µ‚Ä‚¢‚½ê‡
+  if (arrInfo != mapEnd)
+  {
+    std::vector<int>* arr = &arrInfo->second;
+    if (arr->size() <= idx)
+    {
+      std::cerr << "[err] Array idx " << idx << " is greater than array size "
+                << arr->size() << ".   Line : " << GetProgramCounter() <<  std::endl;
+
+      exit(1);
+    }
+
+    return arr->at(idx);
+  }
+
+  std::cerr << "[err] Array \"" << arrayName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+  exit(1);
+}
+
 void Resources::FreeLocalArray(std::string arrayName)
 {
   for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {
