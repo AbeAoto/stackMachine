@@ -97,7 +97,7 @@ void StackMachine::DoInstructions()
     case OPECODES::SETLOCAL: SetLocal(inst);  break;
     case OPECODES::GETLOCAL: GetLocal(inst);  break;
     case OPECODES::ALLOCLOCALARR: AllocateLocalArray(inst);  break;
-    case OPECODES::SETARR:   SetLocalArrayAt(inst);  break;
+    case OPECODES::SETLOCALARR:   SetLocalArrayAt(inst);  break;
     case OPECODES::GETARR:   GetLocalArrayAt(inst);  break;
     case OPECODES::FREEARR:  FreeArray(inst);  break;
     case OPECODES::FUNC:     Func(inst);  break;
@@ -403,7 +403,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
   else if (instruction == "GETLOCAL")  return OPECODES::GETLOCAL;
   else if (instruction == "ALLOCLOCALARR")  return OPECODES::ALLOCLOCALARR;
-  else if (instruction == "SETARR")    return OPECODES::SETARR;
+  else if (instruction == "SETLOCALARR")    return OPECODES::SETLOCALARR;
   else if (instruction == "GETARR")    return OPECODES::GETARR;
   else if (instruction == "FREEARR")   return OPECODES::FREEARR;
   else if (instruction == "FUNC")      return OPECODES::FUNC;
