@@ -6,7 +6,7 @@ SETLOCAL ForEndIdx
 POP
 
 # 配列初期値設定
-ALLOCARR array 21
+ALLOCARR array 20
 SETARR array 0 1
 SETARR array 1 1
 
@@ -53,7 +53,4 @@ LOGNOT
 JPEQ0 endLoop
 JUMP beginLoop
 endLoop:
-RET
-
-CALL fib
 END
