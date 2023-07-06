@@ -99,6 +99,7 @@ void StackMachine::DoInstructions()
     case OPECODES::ALLOCLOCALARR: AllocateLocalArray(inst);  break;
     case OPECODES::ALLOCGLOBALARR: AllocateGlobalArray(inst);  break;
     case OPECODES::SETLOCALARR:   SetLocalArrayAt(inst);  break;
+    case OPECODES::SETGLOBALARR:   SetGlobalArrayAt(inst);  break;
     case OPECODES::GETLOCALARR:   GetLocalArrayAt(inst);  break;
     case OPECODES::FREELOCALARR:  FreeLocalArray(inst);  break;
     case OPECODES::FUNC:     Func(inst);  break;
@@ -165,6 +166,19 @@ void StackMachine::SetLocalArrayAt(std::vector<std::string> inst)
 			    (unsigned int)_resources->GetLocalVariableValue(inst[3]);
 
   _resources->SetLocalArrayAt(inst[1], idx, data);
+}
+
+void StackMachine::SetGlobalArrayAt(std::vector<std::string> inst)
+{
+
+  const unsigned int idx = (isNumber(inst[2])) ?
+			    (unsigned int)std::stoi(inst[2]) :
+			    (unsigned int)_resources->GetLocalVariableValue(inst[2]);
+  int data = (isNumber(inst[3])) ?
+			    std::stoi(inst[3]) :
+			    (unsigned int)_resources->GetLocalVariableValue(inst[3]);
+
+  _resources->SetGlobalArrayAt(inst[1], idx, data);
 }
 
 void StackMachine::GetLocalArrayAt(std::vector<std::string> inst)
@@ -412,6 +426,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "ALLOCLOCALARR")  return OPECODES::ALLOCLOCALARR;
   else if (instruction == "ALLOCGLOBALARR")  return OPECODES::ALLOCGLOBALARR;
   else if (instruction == "SETLOCALARR")    return OPECODES::SETLOCALARR;
+  else if (instruction == "SETGLOBALARR")    return OPECODES::SETGLOBALARR;
   else if (instruction == "GETLOCALARR")    return OPECODES::GETLOCALARR;
   else if (instruction == "FREELOCALARR")   return OPECODES::FREELOCALARR;
   else if (instruction == "FUNC")      return OPECODES::FUNC;

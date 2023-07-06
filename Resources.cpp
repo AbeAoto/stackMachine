@@ -137,6 +137,33 @@ void Resources::SetLocalArrayAt(std::string arrayName, const unsigned int idx, i
   exit(1);
 }
 
+void Resources::SetGlobalArrayAt(std::string arrayName, const unsigned int idx, int data)
+{
+  auto mapEnd = _arrays[0][0].end();
+  auto arrInfo = _arrays[0][0].find(arrayName);
+
+  // 要素が存在していた場合の範囲外エラー処理
+  if (arrInfo != mapEnd)
+  {
+    std::vector<int>* arr = &arrInfo->second;
+    if (arr->size() <= idx)
+    {
+      std::cerr << "[err] Array idx " << idx << " is greater than array size "
+                << arr->size() << ".   Line : " << GetProgramCounter() <<  std::endl;
+
+      exit(1);
+    }
+    arr->at(idx) = data;
+    std::cout << "SetGlobalArrayAt " << arr->at(idx) << std::endl;
+    return;
+  }
+
+  std::cerr << "[err] Array \"" << arrayName
+            << "\" is not declared.   Line : " << GetProgramCounter() <<  std::endl;
+
+  return;
+}
+
 int Resources::GetLocalArrayAt(std::string arrayName, const unsigned int idx)
 {
   for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {

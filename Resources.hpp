@@ -58,6 +58,7 @@ public:
   void AllocateLocalArray(std::string arrayName, int size);
   void AllocateGlobalArray(std::string arrayName, int size);
   void SetLocalArrayAt(std::string arrayName, const unsigned int idx, int data);
+  void SetGlobalArrayAt(std::string arrayName, const unsigned int idx, int data);
   int GetLocalArrayAt(std::string arrayName, const unsigned int idx);
   void FreeLocalArray(std::string arrayName);
 
