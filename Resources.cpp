@@ -97,6 +97,13 @@ void Resources::AllocateLocalArray(std::string arrayName, int size)
   _arrays[GetCallStackDepth()][GetBlockDepth()][arrayName].resize(size);
 }
 
+void Resources::AllocateGlobalArray(std::string arrayName, int size)
+{
+  _arrays[0][0][arrayName].resize(size);
+  std::cout << "Alloc Glob " << _arrays[0][0][arrayName].size() << std::endl;
+}
+
+
 void Resources::SetLocalArrayAt(std::string arrayName, const unsigned int idx, int data)
 {
   for (int blockDepth = GetBlockDepth(); 0 <= blockDepth; blockDepth--) {

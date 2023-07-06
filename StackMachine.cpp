@@ -97,6 +97,7 @@ void StackMachine::DoInstructions()
     case OPECODES::SETLOCAL: SetLocal(inst);  break;
     case OPECODES::GETLOCAL: GetLocal(inst);  break;
     case OPECODES::ALLOCLOCALARR: AllocateLocalArray(inst);  break;
+    case OPECODES::ALLOCGLOBALARR: AllocateGlobalArray(inst);  break;
     case OPECODES::SETLOCALARR:   SetLocalArrayAt(inst);  break;
     case OPECODES::GETLOCALARR:   GetLocalArrayAt(inst);  break;
     case OPECODES::FREELOCALARR:  FreeLocalArray(inst);  break;
@@ -145,6 +146,12 @@ void StackMachine::AllocateLocalArray(std::vector<std::string> inst)
 {
   const unsigned int size = (unsigned int)std::stoi(inst[2]);
   _resources->AllocateLocalArray(inst[1], size);
+}
+
+void StackMachine::AllocateGlobalArray(std::vector<std::string> inst)
+{
+  const unsigned int size = (unsigned int)std::stoi(inst[2]);
+  _resources->AllocateGlobalArray(inst[1], size);
 }
 
 void StackMachine::SetLocalArrayAt(std::vector<std::string> inst)
@@ -338,7 +345,7 @@ void StackMachine::Jpneq0(std::vector<std::string> inst)
     exit(1);
   }
 
-  bool needToJump = (_resources->TopStack() ! = 0);
+  bool needToJump = (_resources->TopStack() != 0);
   _resources->PopStack();
 
   if (needToJump)
@@ -403,6 +410,7 @@ OPECODES StackMachine::StringToOpecodes(std::string instruction)
   else if (instruction == "SETLOCAL")  return OPECODES::SETLOCAL;
   else if (instruction == "GETLOCAL")  return OPECODES::GETLOCAL;
   else if (instruction == "ALLOCLOCALARR")  return OPECODES::ALLOCLOCALARR;
+  else if (instruction == "ALLOCGLOBALARR")  return OPECODES::ALLOCGLOBALARR;
   else if (instruction == "SETLOCALARR")    return OPECODES::SETLOCALARR;
   else if (instruction == "GETLOCALARR")    return OPECODES::GETLOCALARR;
   else if (instruction == "FREELOCALARR")   return OPECODES::FREELOCALARR;
